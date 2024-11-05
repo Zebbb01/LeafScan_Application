@@ -1,0 +1,162 @@
+/* Regular Navbar */
+nav {
+  width: 100%;
+  background: rgba(154,205,50, 0.5); /* Default with opacity */
+  color: #ffffff;
+  padding: 4px 0;
+  position: fixed;
+  top: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 10;
+}
+/* Navbar with full opacity */
+.full-opacity-nav {
+  background: rgba(154,205,50, 1) !important; /* Fully opaque */
+}
+nav ul li a:hover {
+  color: rgb(12, 112, 37); /* Yellow text color on hover */
+  transition: 0.3s;
+}
+.logo {
+    width: 100px;
+}
+.profile_icon {
+  width: 30px; /* Increased size for better visibility */
+  height: 20px; /* Ensure it's a square */
+  border-radius: 50%; /* Keep it circular */  
+  object-fit: cover; /* Ensures the image fills the circle */
+  background-color: #f1f1f1; /* Optional: fallback background */
+}
+
+nav ul li{
+    display: inline-block;
+    list-style: none;
+    margin: 5px 15px;
+    font-size: 17px;
+}
+.dark-nav{
+    background-color: yellowgreen;
+    transition: 0.5s;
+}
+.menu-icon{
+    display: none;
+}
+.hide-mobile-menu {
+  right: -200px; /* When mobile menu is hidden */
+}
+
+.show-mobile-menu {
+  right: 0; /* When mobile menu is visible */
+  transition: 0.5s;
+}
+
+/* Adjust these styles as needed to match your design */
+.dropdown {
+    position: relative;
+    display: inline-block;
+  }
+  
+  .dropdown-menu {
+    display: none;
+    position: absolute;
+    background-color: yellowgreen;
+    box-shadow: 1px 1px 8px rgba(0, 0, 0, 0.65);
+    min-width: 160px;
+    z-index: 1;
+  }
+  
+  .dropdown-menu.show {
+    display: block;
+    background-color: none;
+  }
+  
+  .dropdown-item {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+  }
+  
+  .dropdown-item:hover {
+    box-shadow: 1px 1px 8px rgba(0, 0, 0, 0.3);
+    color: rgb(255, 255, 255);
+  }
+  
+
+
+/* ----- media queries to become responsive ----- */
+@media (max-width: 1000px){
+    .logo{
+        width: 90px;
+    }
+    nav ul li{
+        margin: 10px 15px;
+    }
+}
+@media (max-width: 844px){
+    nav{
+        padding: 10px 0;
+    }
+    nav ul {
+        position: fixed;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        background: yellowgreen;
+        z-index: -1;
+        width: 250px;
+        padding-top: 70px;
+        transition: 0.5s;
+    }
+    nav ul li{
+        display: block;
+        margin: 25px 40px;
+    }
+    .menu-icon{
+        display: block;
+        width: 30px;
+        cursor: pointer;
+    }
+    
+    .hide-mobile-menu {
+      right: -200px; /* When mobile menu is hidden */
+      visibility: hidden;
+      opacity: 0;
+      transition: right 0.5s, opacity 0.5s ease;
+    }
+    
+    .show-mobile-menu {
+      right: 0; /* When mobile menu is visible */
+      visibility: visible;
+      opacity: 1;
+      transition: right 0.5s, opacity 0.5s ease;
+    }
+    
+    .dropdown-menu {
+        left: -55px;
+        bottom: 0;
+        right: 7;  /* Ensure dropdown menu stays aligned */
+        
+      }
+      .dropdown-menu {
+        display: block;
+        position: absolute;
+        background-color: transparent;
+        box-shadow: none;
+        min-width: 160px;
+        z-index: 1;
+      }
+      .dropdown-item {
+        position: relative;
+        color: #f1f1f1;
+        padding: 10px 16px;
+        text-decoration: none;
+        display: block;
+      }
+      .logo {
+        width: 80px;
+    }
+}

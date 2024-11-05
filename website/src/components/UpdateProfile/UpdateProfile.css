@@ -1,0 +1,110 @@
+.pf-update {
+  margin: 100px auto; /* Reduced margin for mobile */
+  width: 90%; /* Full width on smaller screens */
+  max-width: 450px; /* Keep max width for larger screens */
+  background-color: #FFFFDD; /* Dark background */
+  padding: 20px; /* Reduced padding for mobile */
+  border-radius: 10px;
+  box-shadow: 1px 1px 8px rgba(0, 0, 0, 0.65);
+  color: #ffffff; /* White text */
+}
+
+.pf-update label {
+  color: #016A70; /* Light grey labels */
+  margin: 10px 0;
+}
+
+.pf-update h1 {
+  text-align: center;
+  font-weight: bold;
+  color: #016A70;
+  text-transform: uppercase;
+}
+
+
+.update-container .pf-update input {
+  margin: 10px 0;
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  background-color: #ffffff;
+  color: #016A70;
+  box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.65);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.up-eyeIcon {
+  position: absolute;
+  right: 10px; /* Adjust right position */
+  top: 50%; /* Center vertically */
+  transform: translateY(-50%); /* Center vertically */
+  cursor: pointer;
+  color: #016A70;
+  width: 24px; /* Set a default width */
+  height: 24px; /* Set a default height */
+}
+
+/* Media Queries for responsiveness */
+@media (max-width: 600px) {
+  .pf-update {
+    padding: 15px;
+    margin: 10px;
+  }
+
+
+  .btn-update .btn-info .btn-secondary {
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+  }
+
+  .up-eyeIcon {
+    width: 20px; /* Adjust size for smaller screens */
+    height: 20px; /* Adjust size for smaller screens */
+    right: 8px; /* Slightly adjust position for smaller screens */
+  }
+}
+
+.form-control {
+  width: 100%;
+  padding: 10px;
+  margin-top: 5px;
+  margin-bottom: 15px;
+  border: 1px solid #555; /* Dark grey border */
+  border-radius: 5px;
+  background-color: #ffffff; /* Default input background */
+  color: #016A70; /* Default text color */
+}
+
+.form-control:disabled {
+  background-color: #f0f0f0; /* Light gray background for disabled */
+  color: #888; /* Darker gray text for disabled */
+  cursor: not-allowed; /* Indicate that it's not clickable */
+}
+
+.form-control::placeholder {
+  color: #888; /* Light grey placeholder */
+}
+
+
+.btn-update {
+  display: flex;
+  justify-content: space-between; /* Adjust this as needed */
+  margin-top: 20px;
+}
+
+.btn-update .btn-secondary {
+  background-color: #f5221a; /* hover */
+  color: #ffffff;
+}
+
+.btn-update .btn-secondary:hover {
+  background-color: rgb(233, 113, 58);
+  color: white;
+}
+
+.mb-2 span {
+  color: red;
+  padding-left: 5px;
+}

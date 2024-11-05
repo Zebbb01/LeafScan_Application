@@ -1,0 +1,118 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap');
+
+
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Outfit", sans-serif;
+}
+
+/* Video background styling */
+.video-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Ensures the video covers the screen */
+    z-index: -1; /* Keep the video behind content */
+    filter: blur(8px); /* Add a blur effect to the video */
+    opacity: 0.6; /* Adjust transparency to enhance readability */
+  }
+  
+  /* Overlay for darkening the background */
+  .overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5); /* Dark overlay for readability */
+    z-index: -1; /* Behind all content but above the video */
+  }
+
+body {
+    background: Beige;
+}
+
+body.authBackground {
+    background-color: Beige; /* background of editprofile */
+}
+
+.update-container{
+    padding-top: 100px;
+}
+.login-container{
+    padding-top: 80px;
+}
+.signup-container{
+    padding-top: 80px;
+}
+a {
+    text-decoration: none;
+    color: inherit;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.container {
+    padding-left: 1%;
+    padding-right: 3%;
+}
+
+.btn {
+    background: yellowgreen;
+    color: aliceblue;
+    padding: 14px 25px;
+    font-size: 20px;
+    border-radius: 10px;
+    cursor: pointer;
+    border: 0;
+    outline: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.dropdown-menu, .dropdown-item {
+    border-radius: 10px;
+}
+
+
+.btn img {
+    width: 20px;
+    margin-left: 10px;
+}
+
+/* Add hover styles for username and Get Started button */
+.btn:hover,
+.btn-get-started:hover,
+.dropdown-toggle:hover {
+  background-color: rgb(179, 219, 99);
+  transition: 0.3s;
+}
+
+input {
+        margin: 5px 0;
+        padding: 10px;
+        border: none;
+        border-radius: 5px;
+        background-color: #ffffff;
+        color: #016A70;
+        box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.65);
+        width: 100%;
+        box-sizing: border-box;
+}
+
+/* ----- media queries to become responsive ----- */
+@media (max-width: 1000px) {
+    .container {
+        padding-left: 5%;
+        padding-right: 5%;
+    }
+    .btn {
+        padding: 14px 22px;
+    }
+}

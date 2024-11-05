@@ -1,0 +1,141 @@
+.scan-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 20px auto;
+  max-width: 90%;
+}
+
+.upload-container {
+  border: 2px dashed #ddd;
+  padding: 30px;
+  text-align: center;
+  border-radius: 10px;
+  width: 100%;
+  max-width: 400px;
+}
+
+.upload-label {
+  font-size: 16px;
+  font-weight: 500;
+  color: #333;
+}
+
+.browse-link {
+  color: yellowgreen;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.file-requirements {
+  color: #888;
+  font-size: 14px;
+}
+
+.upload-container .btn {
+  background-color: yellowgreen;
+  color: #fff;
+  padding: 10px 20px;
+  margin-top: 15px;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.spinner {
+  border: 4px solid rgba(0, 0, 0, 0.1);
+  border-top: 4px solid #4CAF50;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1000;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.image-preview {
+  display: flex;
+  flex-direction: column;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  max-width: 100%;
+  justify-content: space-between;
+}
+
+.preview-img {
+  width: 100%;
+  max-width: 400px;
+  height: auto;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.info-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  margin-bottom: 20px;
+  gap: 10px;
+}
+
+.button-group {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+  justify-content: center;
+}
+
+.change-button, .scan-button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.change-button {
+  background-color: #f44336;
+  color: white;
+}
+
+.scan-button {
+  background-color: yellowgreen;
+  color: white;
+}
+
+@media (min-width: 768px) {
+  .image-preview {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* Image on left, info on right */
+    gap: 20px;
+    max-width: 800px;
+  }
+
+  .preview-img {
+    grid-column: 1; /* Image on the left side */
+    margin-bottom: 0; /* Remove margin in grid layout */
+  }
+
+  .info-container {
+    grid-column: 2; /* Info on the right side */
+    align-self: start; /* Align info to the start of the column */
+  }
+
+  .button-group {
+    grid-column: 1 / span 2; /* Buttons span both columns */
+    justify-content: center;
+    width: 100%;
+  }
+}

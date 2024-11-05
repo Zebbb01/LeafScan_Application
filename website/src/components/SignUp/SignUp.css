@@ -1,0 +1,154 @@
+.addUser {
+    margin: 50px auto;
+    width: 80%;
+    max-width: 400px;
+    background-color: #FFFFDD;
+    padding: 40px;
+    border-radius: 10px;
+    box-shadow: 1px 1px 8px rgba(0, 0, 0, 0.65);
+    color: #ffffff;
+}
+
+.addUserForm .inputGroup {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.addUserForm .inputGroup label {
+    margin: 10px 0;
+    color: #016A70;
+}
+
+.addUserForm .inputGroup input {
+    margin: 5px 0;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    background-color: #ffffff;
+    color: #016A70;
+    box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.65);
+    width: 100%; /* Ensure full width */
+    box-sizing: border-box; /* Include padding and border in the element's total width and height */
+}
+
+.passwordStrengthWrapper {
+    margin: 10px 0;
+    width: 100%; /* Ensure full width */
+}
+
+.passwordStrengthBar {
+    height: 4px;
+    border-radius: 5px;
+    background-color: #ddd;
+    position: relative;
+}
+
+.passwordStrengthBar span {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    border-radius: 5px;
+    display: block;
+    width: 0;
+    transition: width 0.3s;
+}
+
+.strength-0 span {
+    width: 20%;
+    background-color: #e74c3c; /* Red */
+}
+
+.strength-1 span {
+    width: 40%;
+    background-color: #f39c12; /* Orange */
+}
+
+.strength-2 span {
+    width: 60%;
+    background-color: #f1c40f; /* Yellow for Medium */
+}
+
+.strength-3 span {
+    width: 80%;
+    background-color: #2ecc71; /* Green */
+}
+
+.strength-4 span {
+    width: 100%;
+    background-color: #27ae60; /* Dark Green */
+}
+
+.passwordStrengthText {
+    text-align: start;
+    font-size: 0.9em;
+    color: #016A70;
+    margin-top: 5px;
+}
+
+.inputGroup button {
+    margin-top: 20px;
+    padding: 10px;
+    background-color: #016A70;
+    border: none;
+    border-radius: 5px;
+    color: #ffffff;
+    cursor: pointer;
+}
+
+.addUser h1 {
+    text-align: center;
+    font-weight: bold;
+    color: #016A70;
+    text-transform: uppercase;
+}
+
+.inputGroup span {
+    color: red;
+    padding-left: 5px;
+    font-size: 0.9em;
+}
+
+.logins {
+    margin-top: 30px;
+    text-align: center;
+    color: #016a70bd;
+}
+
+.logins .btn {
+    margin-top: 20px;
+    width: 100%;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.logo-signup {
+    width: 75px;
+}
+
+.passwordWrapper {
+    position: relative;
+    width: 100%; /* Match the width of input fields */
+}
+
+.passwordWrapper input {
+    width: 100%; /* Match the width of input fields */
+}
+
+.eyeIcon {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #016A70;
+}
+
+/* Media queries for responsiveness */
+@media (max-width: 768px) {
+    .addUser {
+        width: 90%;
+    }
+}

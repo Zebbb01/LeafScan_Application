@@ -1,0 +1,5 @@
+# Enforce LF endings for all text files
+* text=auto
+# Python virtual environment
+server/venv/* -text
+website/src/assets/Cacao[[:space:]]farming[[:space:]](360p).mp4 filter=lfs diff=lfs merge=lfs -text

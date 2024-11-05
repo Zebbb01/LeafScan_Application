@@ -1,0 +1,41 @@
+# Node modules
+**/node_modules
+
+# Logs
+**/logs
+**/*.log
+npm-debug.log*
+
+# Dependency directories
+application/node_modules/
+website/node_modules/
+server/node_modules/
+
+# Generated files
+application/.expo/
+application/.expo-shared/
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Python
+*.py[cod]
+__pycache__/
+server/venv/
+
+# Environment variables
+**/.env
+
+# IDE-specific files
+.vscode/
+.idea/
+
+# Build output
+application/dist/
+frontend/dist/
+
+# Miscellaneous
+**/coverage/
+*.tmp
+*.temp

@@ -1,0 +1,15 @@
+Flask==3.0.3
+Flask-Bcrypt==1.0.1
+Flask-Cors==5.0.0
+Flask-Mail==0.10.0
+Flask-Migrate==4.0.7
+Flask-SQLAlchemy==3.1.1
+numpy==2.0.2
+pandas==2.2.3
+scikit-learn==1.5.2
+statsmodels==0.14.4
+tensorflow
+Pillow==11.0.0
+python-dotenv==1.0.1
+psycopg2-binary
+flask-migrate

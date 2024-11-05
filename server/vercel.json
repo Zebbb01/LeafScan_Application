@@ -1,0 +1,14 @@
+{
+    "version": 2,
+    "routes": [
+      {
+        "src": "/api/(.*)",
+        "dest": "https://9ce0-2001-4455-4e3-3900-b42a-9003-a436-5da6.ngrok-free.app/$1"
+      },
+      {
+        "src": "/(.*)",
+        "dest": "/index.html"
+      }
+    ]
+  }
+  

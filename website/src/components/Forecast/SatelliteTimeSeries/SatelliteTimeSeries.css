@@ -1,0 +1,50 @@
+.satellite-chart {
+    width: 90%;
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 15px;
+    background-color: #f5f5f5;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.3s ease-in-out, transform 0.3s ease-in-out;
+}
+
+.satellite-chart .chart-container {
+    position: relative;
+    height: 60vh; /* Use viewport height for responsiveness */
+    max-height: 600px;
+}
+
+.satellite-chart h2 {
+    text-align: center;
+    margin-bottom: 15px;
+    color: #333;
+    font-family: 'Arial', sans-serif;
+    font-size: 1.8rem; /* Responsive font size */
+}
+
+/* Loading and error states */
+.satellite-chart .loading,
+.satellite-chart .error {
+    text-align: center;
+    font-size: 1.5rem;
+}
+
+.satellite-chart .loading {
+    color: #007bff;
+}
+
+.satellite-chart .error {
+    color: #ff4d4d;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .satellite-chart {
+        padding: 10px;
+    }
+
+    .satellite-chart h2 {
+        font-size: 1.5rem;
+    }
+}
