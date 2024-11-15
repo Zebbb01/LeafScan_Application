@@ -1,0 +1,87 @@
+/* Container for the description and graph */
+.bargraph-container {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px; /* Space between columns */
+    flex-wrap: wrap;
+    max-width: 1240px;
+    margin: 20px auto;
+    padding: 20px;
+}
+
+/* Description section */
+.bargraph-description {
+    flex: 1;
+    min-width: 300px; /* Ensure description has a minimum width */
+    padding: 20px;
+}
+
+.bargraph-description h2 {
+    font-size: 1.6rem;
+    margin-bottom: 10px;
+}
+
+.bargraph-description p {
+    color: #555;
+    text-align: justify;
+    text-indent: 40px;
+    margin-bottom: 15px;
+}
+
+/* Chart section */
+.bargraph-chart {
+    flex: 2;
+    min-width: 300px;
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Chart container for responsive resizing */
+.bargraph-chart .chart-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    max-height: 600px; /* Optional, adjust based on your design */
+}
+
+/* Make the canvas responsive */
+.bargraph-chart canvas {
+    width: 100% !important;
+    height: auto !important;
+}
+
+
+/* Loading and error states */
+.bar-chart .loading,
+.bar-chart .error {
+    text-align: center;
+    font-size: 1.5rem;
+    padding: 15px;
+    border-radius: 8px;
+}
+
+.bar-chart .loading {
+    color: #007bff;
+}
+
+.bar-chart .error {
+    color: #ff4d4d;
+    background-color: #ffe6e6;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .bargraph-container {
+        flex-direction: column; /* Stack columns vertically on smaller screens */
+    }
+
+    .bargraph-description,
+    .bargraph-chart {
+        flex: 1 1 100%; /* Allow both sections to take full width */
+    }
+}

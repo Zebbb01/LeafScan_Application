@@ -31,8 +31,6 @@ const ForecastLine = () => {
         const actualProductions = data.actual.map(item => item['Production']);
         const predictions = data.forecast.map(item => item['Production']);
         const allLabels = [...labels, ...data.dates];
-        const lowerCI = data.lower_CI;
-        const upperCI = data.upper_CI;
   
         const alignedPredictions = [...Array(labels.length).fill(null), ...predictions];
 
@@ -50,48 +48,36 @@ const ForecastLine = () => {
               data: actualProductions.map((y, index) => ({ x: labels[index], y })),
               backgroundColor: 'blue',
               borderColor: 'blue',
-              borderWidth: 3,
+              borderWidth: 2,
               fill: false,
               tension: 0.1,
               spanGaps: true,
+              pointRadius: 0,  // Hide points by default
+              pointHoverRadius: 5,  // Show points on hover
             },
             {
               label: 'Predicted Production',
               data: alignedPredictions.map((y, index) => ({ x: allLabels[index], y })),
               backgroundColor: 'orange',
               borderColor: 'orange',
-              borderWidth: 3,
+              borderWidth: 2,
               fill: false,
               tension: 0.1,
               spanGaps: true,
+              pointRadius: 0,
+              pointHoverRadius: 5,
             },
             {
               label: 'Start of Prediction',
               data: connectingLine,
               backgroundColor: 'green',
               borderColor: 'green',
-              borderWidth: 3,
+              borderWidth: 2,
               fill: false,
               tension: 0.1,
               spanGaps: true,
-            },
-            {
-              label: 'Lower CI',
-              data: lowerCI.map((y, index) => ({ x: data.dates[index], y })),
-              backgroundColor: 'rgba(255, 99, 132, 0.2)',
-              borderColor: 'rgba(255, 99, 132, 0.2)',
-              fill: '+1',
               pointRadius: 0,
-              showLine: true,
-            },
-            {
-              label: 'Upper CI',
-              data: upperCI.map((y, index) => ({ x: data.dates[index], y })),
-              backgroundColor: 'rgba(54, 162, 235, 0.2)',
-              borderColor: 'rgba(54, 162, 235, 0.2)',
-              fill: '-1',
-              pointRadius: 0,
-              showLine: true,
+              pointHoverRadius: 5,
             }
           ]
         });
@@ -104,16 +90,17 @@ const ForecastLine = () => {
     };
   
     fetchData();
-  }, []);
-  
+  }, []);  // Fetch data on component mount
 
   if (loading) return <div className="loading">Loading...</div>;
   if (error) return <div className="error">Error: {error}</div>;
 
   return (
+    <div className="chart-container">
+      
     <div className="forecast-chart-container">
       <div className="mae-display">
-        <strong>Mean Absolute Error (MAE):</strong> {mae !== null ? mae : 'N/A'}
+        <strong>Mean Absolute Error (MAE): </strong> {mae !== null ? mae : 'N/A'}
       </div>
       <Line 
         data={chartData} 
@@ -135,6 +122,10 @@ const ForecastLine = () => {
             },
           },
           plugins: {
+            title: {
+              display: true,
+              text: 'Cacao Fruit Production Forecast',
+            },
             legend: {
               display: true,
               position: 'top',
@@ -148,6 +139,8 @@ const ForecastLine = () => {
           }
         }} 
       />
+    </div>
+      <p>This graph visualizes cacao fruit production trends over the years, highlighting patterns of growth and decline that are crucial for assessing the long-term health of cacao farming. By analyzing historical data, stakeholders can better forecast future production, anticipate challenges like climate change or market shifts, and make informed decisions to optimize resource management. This data-driven approach helps farmers and researchers adjust strategies for sustainability and productivity, ultimately supporting better planning for future production cycles in the cacao industry.</p>
     </div>
   );  
 };

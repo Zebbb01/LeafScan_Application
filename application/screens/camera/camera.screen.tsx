@@ -131,7 +131,7 @@ export default function CameraScreen() {
 
       <View style={styles.bottomControls}>
         <TouchableOpacity style={styles.galleryButton} onPress={openGallery} disabled={loading}>
-          <Icon name="photo-library" size={24} color={loading ? '#888' : '#fff'} />
+          <Icon name="photo-library" size={30} color={loading ? '#888' : '#016A70'} />
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.scanButton}
@@ -146,7 +146,7 @@ export default function CameraScreen() {
           />
         </TouchableOpacity>
         <TouchableOpacity style={styles.homeButton} onPress={goToDashboard} disabled={loading}>
-          <Icon name="home" size={24} color={loading ? '#888' : '#fff'} />
+          <Icon name="home" size={30} color={loading ? '#888' : '#016A70'} />
         </TouchableOpacity>
       </View>
 

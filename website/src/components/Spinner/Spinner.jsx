@@ -1,9 +1,7 @@
-
-import './Spinner.css'; // Optional: Add your spinner styles here
+import './Spinner.css'; // Import the updated spinner styles
 
 const Spinner = () => (
     <div className="spinner">
-        {/* Simple CSS spinner */}
         <div className="spinner-circle"></div>
     </div>
 );

@@ -180,31 +180,33 @@ def init_user_routes(app):
     def check_password_route():
         id = request.json["id"]
         password = request.json["password"]
-    
+        
+        # Get the user based on the ID
         user = User.query.get(id)
         if user is None:
             return jsonify({"error": "User not found"}), 404
-    
-        if check_password(user.password, password):  # Use check_password with pepper
+
+        # Use the check_password helper function with the correct arguments (hashed password, plain password, pepper)
+        if check_password(user.password, password, PEPPER):
             return jsonify({"valid": True}), 200
         else:
             return jsonify({"valid": False}), 200
     
-    @app.route("/api/update/<id>", methods=["GET"])
+    @app.route("/api/update/<id>", methods=["PUT"])
     def update_profile(id):
         data = request.json
-    
+
         user = User.query.get(id)
         if user is None:
             return jsonify({"error": "User not found"}), 404
-    
+
         if 'name' in data:
             user.name = data['name']
-    
+
         if 'password' in data:
-            new_password = hash_password(data['password'])  # Hash with pepper
+            new_password = hash_password(data['password'], PEPPER)  # Pass PEPPER here
             user.password = new_password
-    
+
         try:
             db.session.commit()
             return jsonify({"updated": True}), 200
@@ -212,3 +214,4 @@ def init_user_routes(app):
             print(e)
             db.session.rollback()
             return jsonify({"error": "Could not update profile"}), 500
+

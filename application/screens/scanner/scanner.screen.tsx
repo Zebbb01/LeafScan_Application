@@ -6,7 +6,9 @@ import {
   TouchableOpacity,
   Alert,
   Modal,
-  ActivityIndicator, // Import ActivityIndicator for loading spinner
+  ActivityIndicator,
+  ScrollView, // Import ActivityIndicator for loading spinner
+  Linking
 } from "react-native";
 import { useRoute } from "@react-navigation/native";
 import axios, { CancelTokenSource } from "axios";
@@ -29,7 +31,9 @@ export default function ScannerScreen() {
     disease: string;
     confidence: number;
     prevention: string;
-    metrics: any;
+    cause: string;
+    contributing_factors: string;
+    more_info_url: string;
   } | null>(null);
 
   const cancelTokenSource = useRef<CancelTokenSource | null>(null);
@@ -68,8 +72,8 @@ export default function ScannerScreen() {
       );
 
       if (response.status === 201) {
-        const { disease, confidence, prevention, metrics } = response.data;
-        setScanResult({ disease, confidence, prevention, metrics });
+        const { disease, confidence, prevention,  cause, contributing_factors, more_info_url } = response.data;
+        setScanResult({ disease, confidence, prevention, cause, contributing_factors, more_info_url });
         setModalVisible(true);
       } else {
         console.error("Failed to scan image, server returned:", response.status);
@@ -179,7 +183,6 @@ export default function ScannerScreen() {
             <Text style={styles.loadingText}>Please wait...</Text>
           </View>
         )}
-      </View>
 
       <TouchableOpacity
         onPress={handleHome}
@@ -191,35 +194,59 @@ export default function ScannerScreen() {
       </TouchableOpacity>
 
       <Modal
-        animationType="slide"
-        transparent={true}
-        visible={modalVisible}
-        onRequestClose={() => setModalVisible(false)}
-      >
-        <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Scan Result</Text>
-            {scanResult && (
-              <>
-                <Text style={styles.modalLabel}>Disease:</Text>
-                <Text style={styles.modalLabel2}>{scanResult.disease}</Text>
-                <Text style={styles.modalLabel}>Confidence:</Text>
-                <Text style={styles.modalLabel2}>
-                  {(scanResult.confidence * 100).toFixed(2)}%
-                </Text>
-                <Text style={styles.modalLabel}>Prevention:</Text>
-                <Text style={styles.modalLabel2}>{scanResult.prevention}</Text>
-              </>
-            )}
-            <TouchableOpacity
-              style={styles.closeButton}
-              onPress={() => setModalVisible(false)}
-            >
-              <Text style={styles.closeButtonText}>Close</Text>
-            </TouchableOpacity>
+          animationType="slide"
+          transparent={true}
+          visible={modalVisible}
+          onRequestClose={() => setModalVisible(false)}
+        >
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContent}>
+              <TouchableOpacity
+                style={styles.modalCloseIcon}
+                onPress={() => setModalVisible(false)}
+              >
+                <Ionicons name="close" size={24} color="#333" />
+              </TouchableOpacity>
+              <Text style={styles.modalTitle}>Scan Result</Text>
+              <ScrollView contentContainerStyle={styles.modalScrollContent}>
+                {scanResult &&  (
+                  <>
+                  <View style={styles.row}>
+                    <View style={styles.column}>
+                      <Text style={styles.modalLabel}>Disease:</Text>
+                      <Text style={styles.modalText}>{scanResult.disease}</Text>
+                    </View>
+                    <View style={styles.column}>
+                      <Text style={styles.modalLabel}>Confidence:</Text>
+                      <Text style={styles.modalText}>
+                        {(scanResult.confidence * 100).toFixed(2)}%
+                      </Text>
+                  </View>
+
+                  </View>
+                  <View style={styles.description}>
+                    <Text style={styles.modalLabel}>Cause:</Text>
+                    <Text style={styles.modalText}>{scanResult.cause}</Text>
+                    <Text style={styles.modalLabel}>Contributing Factors:</Text>
+                    <Text style={styles.modalText}>{scanResult.contributing_factors}</Text>
+                    <Text style={styles.modalLabel}>Prevention:</Text>
+                    <Text style={styles.modalText}>{scanResult.prevention}</Text>
+                    <Text style={styles.modalLabel}>More Info:</Text>
+                      {scanResult.more_info_url && scanResult.more_info_url !== "N/A" ? (
+                          <TouchableOpacity onPress={() => Linking.openURL(scanResult.more_info_url)}>
+                              <Text style={[styles.modalText, { color: 'blue' }]}>Click here for more information</Text>
+                          </TouchableOpacity>
+                      ) : (
+                          <Text style={styles.modalText}>No additional information available.</Text>
+                      )}
+                  </View> 
+                  </>
+                )}
+              </ScrollView>
+            </View>
           </View>
-        </View>
-      </Modal>
+        </Modal>
+      </View>
     </LinearGradient>
   );
 }

@@ -1,7 +1,6 @@
-import { Dimensions } from "react-native";
-import { StyleSheet } from "react-native";
+import { Dimensions, StyleSheet } from "react-native";
+const { width, height } = Dimensions.get("window");
 
-const { width } = Dimensions.get('window');
 const styles = StyleSheet.create({
   gradient: {
     flex: 1,
@@ -96,38 +95,55 @@ const styles = StyleSheet.create({
     fontFamily: "Raleway_600SemiBold",
     marginLeft: 5,
   },
-  modalContainer: {
+  modalOverlay: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.7)",
+    justifyContent: "flex-end",
+    backgroundColor: "rgba(0, 0, 0, 0.3)",
   },
   modalContent: {
-    width: "85%",
-    maxWidth: 400,
+    maxHeight: height * 0.6,
+    width: "100%",
     backgroundColor: "#ffffff",
-    borderRadius: 15,
-    padding: 25,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 5,
-    elevation: 7,
+    borderTopLeftRadius: 15,
+    borderTopRightRadius: 15,
+    padding: 20,
+  },
+  modalCloseIcon: {
+    alignSelf: "flex-end",
   },
   modalTitle: {
     fontSize: 24,
     fontWeight: "bold",
-    marginBottom: 20,
     textAlign: "center",
+    marginBottom: 10,
+  },
+  modalScrollContent: {
+    paddingBottom: 20,
   },
   modalLabel: {
-    fontWeight: "bold",
     fontSize: 18,
+    fontWeight: "bold",
+    marginTop: 10,
+  },
+  modalText: {
+    fontSize: 16,
+    marginBottom: 10,
+    textAlign: "justify",
+  },
+  row: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 10,
+    paddingHorizontal: 10,
+  },
+  column: {
+    flexDirection: "column",
+    justifyContent: "space-between",
     marginBottom: 10,
   },
-  modalLabel2: {
-    fontSize: 18,
+  description: {
     marginBottom: 10,
+    paddingHorizontal: 10,
   },
   closeButton: {
     backgroundColor: "#f44336",

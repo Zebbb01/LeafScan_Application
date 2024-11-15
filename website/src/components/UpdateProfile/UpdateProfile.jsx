@@ -24,7 +24,7 @@ const UpdateProfile = ({ setUser }) => {
     if (!location.state) {
       // If state is not available, fetch user data
       setLoading(true);
-      axios.get(`api/user/${id}`)
+      axios.get(`/api/user/${id}`)
         .then(res => {
           setName(res.data.name);
           setEmail(res.data.email);
@@ -64,7 +64,7 @@ const UpdateProfile = ({ setUser }) => {
 
     if (currentPassword) {
       try {
-        const response = await axios.post('api/check-password', {
+        const response = await axios.post('/api/check-password', {
           id,
           password: currentPassword
         });

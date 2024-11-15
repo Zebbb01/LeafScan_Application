@@ -12,3 +12,24 @@
     margin-top: 5px;
     text-transform: none;
 }
+
+/* Responsive Area*/
+@media (max-width: 900px) {
+    .title{
+        font-size: 15px;
+
+    }
+    .title h2{
+        font-size: 30px;
+    }
+}
+
+@media (max-width: 650px) {
+    .title{
+        font-size: 15px;
+
+    }
+    .title h2{
+        font-size: 25px;
+    }
+}

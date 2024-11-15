@@ -2,7 +2,8 @@ import React, { Suspense, useState, useEffect } from 'react';
 import { Routes, Route, BrowserRouter, useLocation } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import video from './assets/Cacao farming (360p).mp4'; // Import the video
+import video from './assets/Cacao farming (360p).mp4'; 
+import Spinner from './components/Spinner/Spinner';
 
 const Navbar = React.lazy(() => import('./components/Navbar/Navbar'));
 const Hero = React.lazy(() => import('./components/Navbar/Hero/Hero'));
@@ -17,6 +18,7 @@ const Login = React.lazy(() => import('./components/Login/Login'));
 const UpdateProfile = React.lazy(() => import('./components/UpdateProfile/UpdateProfile'));
 const Scan = React.lazy(() => import('./components/Scan/Scan'));
 const Forecast = React.lazy(() => import('./components/Forecast/ForecastLine'));
+const BarGraph = React.lazy(() => import('./components/BarGraph/BarGraph'));
 
 const App = () => {
   const [user, setUser] = useState(null);
@@ -31,7 +33,6 @@ const App = () => {
   }, []);
 
   useEffect(() => {
-    // Add or remove authBackground for video background pages
     if (['/', '/signup', location.pathname.startsWith('/update/')].includes(location.pathname)) {
       document.body.classList.add('authBackground');
     } else {
@@ -46,7 +47,6 @@ const App = () => {
 
   return (
     <>
-      {/* Conditionally render video background and overlay on login, signup, and update profile pages */}
       {(location.pathname === '/' || location.pathname === '/signup' || location.pathname.startsWith('/update/')) && (
         <>
           <video autoPlay muted loop className="video-background">
@@ -57,60 +57,60 @@ const App = () => {
         </>
       )}
 
-      {/* Conditionally render Navbar only on non-auth pages */}
       {!(location.pathname === '/' || location.pathname === '/signup' || location.pathname.startsWith('/update/')) && (
-        <Suspense fallback={<div>Loading Navbar...</div>}>
+        <Suspense fallback={<Spinner message="Loading Navbar..." />}>
           <Navbar user={user} onLogout={handleLogout} />
         </Suspense>
       )}
 
-      {/* Conditionally render pages: home, scan, etc. */}
-      <Suspense fallback={<div>Loading...</div>}>
+      <Suspense fallback={<Spinner message="Loading content..." />}>
         <Routes>
           <Route path='/' element={<Login setUser={setUser} />} />
           <Route path='/signup' element={<SignUp />} />
           <Route path='/update/:id' element={<UpdateProfile setUser={setUser} />} />
           <Route path='/home' element={
             <div className='App'>
-              {/* Home, Scan, Forecast, etc. should only be visible if the user is authenticated */}
               {user && (
                 <>
-                  <Suspense fallback={<div>Loading Hero...</div>}>
+                  <Suspense fallback={<Spinner message="Loading Hero..." />}>
                     <Hero />
                   </Suspense>
                   <div className="container">
-                    <Suspense fallback={<div>Loading Title...</div>}>
+                    <Suspense fallback={<Spinner message="Loading Title..." />}>
                       <Title subTitle='Disease Detection' title='Scan Your Cacao Leaf' />
                     </Suspense>
-                    <Suspense fallback={<div>Loading Scan...</div>}>
+                    <Suspense fallback={<Spinner message="Loading Scan..." />}>
                       <Scan />
                     </Suspense>
-                    <Suspense fallback={<div>Loading Title...</div>}>
+                    <Suspense fallback={<Spinner message="Loading Title..." />}>
                       <Title subTitle='Disease Overview' title='Types of Cacao Leaf Diseases' />
                     </Suspense>
-                    <Suspense fallback={<div>Loading Collections...</div>}>
+                    <Suspense fallback={<Spinner message="Loading Collections..." />}>
                       <Collections />
                     </Suspense>
-                    <Suspense fallback={<div>Loading Title...</div>}>
+                    <Suspense fallback={<Spinner message="Loading Title..." />}>
                       <Title subTitle='Forecasting' title='Cacao Fruit Production Forecast' />
                     </Suspense>
-                    <Suspense fallback={<div>Loading Forecast...</div>}>
+                    <Suspense fallback={<Spinner message="Loading Forecast..." />}>
                       <Forecast />
                     </Suspense>
-                    <Suspense fallback={<div>Loading About...</div>}>
+                    <Suspense fallback={<Spinner message="Loading BarGraph..." />}>
+                      <BarGraph />
+                    </Suspense>
+                    <Suspense fallback={<Spinner message="Loading About..." />}>
                       <About setPlayState={setPlayState} />
                     </Suspense>
-                    <Suspense fallback={<div>Loading Title...</div>}>
+                    <Suspense fallback={<Spinner message="Loading Title..." />}>
                       <Title subTitle='Reach Out' title='Contact Us' />
                     </Suspense>
-                    <Suspense fallback={<div>Loading Contact...</div>}>
+                    <Suspense fallback={<Spinner message="Loading Contact..." />}>
                       <Contact />
                     </Suspense>
-                    <Suspense fallback={<div>Loading Footer...</div>}>
+                    <Suspense fallback={<Spinner message="Loading Footer..." />}>
                       <Footer />
                     </Suspense>
                   </div>
-                  <Suspense fallback={<div>Loading VideoPlayer...</div>}>
+                  <Suspense fallback={<Spinner message="Loading VideoPlayer..." />}>
                     <VideoPlayer playState={playState} setPlayState={setPlayState} />
                   </Suspense>
                 </>
@@ -119,6 +119,7 @@ const App = () => {
           } />
         </Routes>
       </Suspense>
+
       <ToastContainer position="bottom-right" />
     </>
   );

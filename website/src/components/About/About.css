@@ -44,8 +44,11 @@
     max-width: 400px;
 }
 .about p{
+    text-align: justify;
+    text-indent: 40px;
     color: #676767;
     margin-bottom: 15px;
+    width: 100%;
 }
 /* ----- media queries to become responsive ----- */
 @media (max-width: 800px){
@@ -62,8 +65,46 @@
     }
 }
 /* ----- media queries to become responsive ----- */
+/* Responsive Area*/
+@media (max-width: 900px) {
+    .about h3{
+        font-size: 15px;
+    }
+    .about h2{
+        font-size: 30px;
+    }
+}
 @media (max-width: 700px){
     .about{
         display: flex;
+    }
+}
+@media (max-width: 650px) {
+    .about h3{
+        font-size: 15px;
+        text-align: center;
+        margin-top: 70px;
+    }
+    .about h2{
+        font-size: 25px;
+        margin-bottom: 30px;
+        text-transform: none;
+        text-align: center;
+    }
+    .logo-video{
+        width: 40px;
+        position: absolute;
+        top: 86%;
+        left: 88%;
+        transform: translate( -50%, -50%);
+        cursor: pointer;
+    }
+    .play-icon{
+        width: 50px;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%,-50%);
+        cursor: pointer;
     }
 }

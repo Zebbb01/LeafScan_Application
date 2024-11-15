@@ -34,9 +34,13 @@
   box-sizing: border-box;
 }
 
+.passwordWrapper {
+  position: relative; /* This will allow the eye icon to be positioned inside the wrapper */
+}
+
 .up-eyeIcon {
   position: absolute;
-  right: 10px; /* Adjust right position */
+  right: 10px; /* Adjust right position to place the icon inside the input box */
   top: 50%; /* Center vertically */
   transform: translateY(-50%); /* Center vertically */
   cursor: pointer;
@@ -44,6 +48,7 @@
   width: 24px; /* Set a default width */
   height: 24px; /* Set a default height */
 }
+
 
 /* Media Queries for responsiveness */
 @media (max-width: 600px) {
