@@ -51,7 +51,7 @@ def index(filename):
     return send_from_directory(website_folder, filename)
 
 # Initialize routes
-init_user_routes(app)
+init_user_routes(app, mail)
 init_ml_routes(app)
 
 if __name__ == "__main__":

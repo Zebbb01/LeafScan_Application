@@ -7,7 +7,7 @@ from flask_bcrypt import Bcrypt
 # Fetch pepper from environment
 PEPPER = os.getenv("PEPPER")
 
-def init_user_routes(app):
+def init_user_routes(app, mail):  # Accept mail as a parameter
     bcrypt = Bcrypt(app)
 
     # Helper function for password hashing
@@ -21,11 +21,14 @@ def init_user_routes(app):
         return ''.join(random.choices(string.ascii_uppercase + string.digits, k=4))
 
     def send_verification_email(email, code):
-        msg = Message('Verification Code',
-                      sender=os.getenv('MAIL_USERNAME'),
-                      recipients=[email])
+        msg = Message(
+            subject='Verification Code',
+            sender=os.getenv('MAIL_DEFAULT_SENDER'),
+            recipients=[email]
+        )
         msg.body = f'Your verification code is: {code}'
-        email.send(msg)
+        mail.send(msg)  # Use the passed mail object to send the email
+
     
     # Forgot Password
     @app.route("/api/forgot_password", methods=["POST"])
@@ -74,7 +77,7 @@ def init_user_routes(app):
             # Resend verification code
             verification_code = generate_verification_code()
             user.verification_code = verification_code
-            user.password = hash_password(password)  # Hash with pepper
+            user.password = hash_password(password, PEPPER)  # Hash with pepper
             db.session.commit()
             send_verification_email(email, verification_code)
             return jsonify({"message": "Verification email resent. Please check your email."}), 200
