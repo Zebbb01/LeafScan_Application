@@ -5,22 +5,28 @@
     justify-content: space-between;
     border-top: 1px solid #797979;
     padding: 15px 0;
+    font-size: 15px;
 }
 .footer ul li{
     list-style: none;
     display: inline-block;
     margin-left: 20px;
+    font-size: 14px;
 }
 /* ----- media queries to become responsive ----- */
 @media (max-width: 600px){
     .footer{
         display: block;
         text-align: center;
+        font-size: 12px;
+        padding: 10px 0;
     }
     .footer ul li{
         margin: 10px;
+        font-size: 10px;
     }
     .footer ul{
         margin-top: 10px;
+        font-size: 10px;
     }
 }
