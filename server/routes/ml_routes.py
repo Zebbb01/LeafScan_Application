@@ -142,16 +142,16 @@ def init_ml_routes(app):
             except Exception as e:
                 return jsonify({"error": f"Error during prediction: {str(e)}"}), 500
 
-            # Map the prediction to a class and get disease details
+            # Map the prediction to a class and get prevention/control info
             disease_mapping = {
                 "Branch Dieback": {
-                    "prevention": "Implement regular ...",
+                    "prevention": "Implement regular pruning practices to remove infected or dead branches, which helps reduce sources of infection. Disinfect pruning tools before and after each use to prevent spreading the fungus. Apply fungicide sprays, particularly during the rainy season or in humid conditions, as a preventive measure. Ensure proper soil nutrition through regular fertilization, which strengthens plant resistance against pathogens. Additionally, manage shade to improve air circulation around branches and reduce humidity levels.",
                     "cause": "Caused by fungal pathogens such as *Phytophthora* species or *Moniliophthora roreri*.",
-                    "contributing_factors": "Poor pruning ...",
+                    "contributing_factors": "Poor pruning practices, mechanical damage, environmental stress (e.g., drought), and poor soil nutrition can weaken branches, making them more susceptible to infections. High humidity and wet conditions can also exacerbate the spread of these pathogens.",
                     "more_info_url": "https://www.sciencedirect.com/science/article/abs/pii/S1878614611001437"
                 },
                 "Branch Healthy": {
-                    "prevention": "Continue monitoring ...",
+                    "prevention": "Continue monitoring plant health and apply regular care.",
                     "cause": "Healthy branches with no disease or infection.",
                     "contributing_factors": "Proper care, watering, and pruning.",
                     "more_info_url": "https://www.webmd.com/diet/health-benefits-cacao-powder"
@@ -163,27 +163,27 @@ def init_ml_routes(app):
                     "more_info_url": " "
                 },
                 "Cacao Early Blight": {
-                    "prevention": "Use resistant ...",
+                    "prevention": "Use resistant cacao varieties whenever possible, as these can significantly reduce the risk of early blight. Apply fungicides preventatively, especially in the rainy season when humidity levels are high. Ensure proper spacing between trees to promote air circulation and reduce humidity around the plants. Keep the plantation weed-free, as weeds can increase local humidity and harbor pests that contribute to stress. Proper fertilization and irrigation practices are also important to maintain plant health and reduce susceptibility.",
                     "cause": "Caused by *Phytophthora megakarya* or *Phytophthora palmivora*.",
-                    "contributing_factors": "Similar to late blight...",
+                    "contributing_factors": "Similar to late blight, early blight is favored by wet, humid environments, particularly during the rainy season. Overcrowded plants and stressed cacao trees are more susceptible.",
                     "more_info_url": "https://apsjournals.apsnet.org/doi/10.1094/PDIS-03-20-0565-RE"
                 },
                 "Cacao Healthy": {
-                    "prevention": "Maintain good farm ...",
+                    "prevention": "Maintain good farm hygiene practices and regularly monitor for pests and diseases.",
                     "cause": "No disease present, healthy plant.",
                     "contributing_factors": "Proper care, pest control, and monitoring.",
                     "more_info_url": "https://www.webmd.com/diet/health-benefits-cacao-powder"
                 },
                 "Cacao Late Blight": {
-                    "prevention": "Apply copper-based ...",
+                    "prevention": "Apply copper-based fungicides during high-risk periods, such as the rainy season, to prevent late blight. Ensure proper soil drainage by creating raised beds or adding organic material to prevent waterlogging. Prune excess branches to improve air circulation and manage canopy density, reducing humidity around the leaves. Regularly monitor soil moisture to avoid over-watering, and remove any fallen or diseased plant material immediately to prevent further spread.",
                     "cause": "Caused by *Phytophthora palmivora*.",
-                    "contributing_factors": "Over-watering, poor drainage...",
+                    "contributing_factors": "Over-watering, poor drainage, high humidity, and poor canopy management. The fungus attacks the leaves, pods, and roots, causing significant damage.",
                     "more_info_url": "https://www.sciencedirect.com/topics/agricultural-and-biological-sciences/phytophthora-megakarya"
                 },
                 "Cacao Leaf Spot": {
-                    "prevention": "Avoid overcrowding ...",
+                    "prevention": "Avoid overcrowding of plants by maintaining optimal spacing to allow for good air circulation. Prune regularly to prevent excessive foliage, which can trap moisture and create a favorable environment for fungal growth. Apply protective fungicidal sprays before the rainy season or when conditions are humid. Remove any affected leaves or plant debris from the field to limit sources of infection. Consider intercropping with non-host plants to improve biodiversity and resilience against fungal diseases.",
                     "cause": "Fungal pathogens like *Pseudocercospora* species.",
-                    "contributing_factors": "High humidity, ...",
+                    "contributing_factors": "High humidity, poor air circulation, and excessive rainfall create ideal conditions for fungal growth. Overcrowded plantations or improper pruning can also facilitate disease spread.",
                     "more_info_url": "https://plantvillage.psu.edu/topics/cocoa-cacao/infos"
                 }
             }
@@ -395,30 +395,47 @@ def init_ml_routes(app):
 
             # Perform k-fold cross-validation
             cv_metrics = time_series_k_fold(production_data, k=5)  # k=5 folds for example
-            
-            # Forecast the next 8 quarters using the model trained on all data (no cross-validation here)
+
+            # Train the model and forecast the first quarter
             model = ExponentialSmoothing(
                 production_data['value'], 
                 trend='add', 
                 seasonal='add', 
                 seasonal_periods=4
             ).fit()
-            forecast = model.forecast(8)
+            first_quarter_forecast = model.forecast(1)
+            
+            # Adjust the first quarter production by applying the loss
+            adjusted_first_quarter = first_quarter_forecast[0] * (1 - total_loss) if total_loss > 0 else first_quarter_forecast[0]
 
-            # Apply predicted losses
-            adjusted_production = [
+            # Update the production data with the adjusted first quarter
+            last_date = production_data.index[-1]
+            updated_data = production_data.copy()
+            updated_data.loc[last_date + pd.DateOffset(months=3)] = adjusted_first_quarter
+
+            # Re-train the model on the updated data and forecast the remaining 7 quarters
+            model = ExponentialSmoothing(
+                updated_data['value'], 
+                trend='add', 
+                seasonal='add', 
+                seasonal_periods=4
+            ).fit()
+            remaining_forecast = model.forecast(7)
+            
+            # Adjust the remaining quarters for predicted losses
+            adjusted_remaining_forecast = [
                 value * (1 - total_loss) if total_loss > 0 else value
-                for value in forecast
+                for value in remaining_forecast
             ]
 
-            # Generate forecast dates
-            last_date = production_data.index[-1]
+            # Combine forecasts
             forecast_dates = [last_date + pd.DateOffset(months=3 * i) for i in range(1, 9)]
+            combined_forecast = [adjusted_first_quarter] + adjusted_remaining_forecast
 
             response = {
-                'forecast_dates': [date.strftime('%Y-%d-%m') for date in forecast_dates],
-                'next_8_quarters_forecast': forecast.tolist(),
-                'adjusted_production': adjusted_production,
+                'forecast_dates': [date.strftime('%Y-%m-%d') for date in forecast_dates],
+                'next_8_quarters_forecast': [first_quarter_forecast[0]] + remaining_forecast.tolist(),
+                'adjusted_production': combined_forecast,
                 'predicted_losses': [total_loss] * 8,
                 'evaluation_metrics': cv_metrics,  # Return cross-validation metrics
                 'leaf_disease_loss': leaf_disease_loss,
@@ -431,6 +448,7 @@ def init_ml_routes(app):
         except Exception as e:
             app.logger.error(f"Error during forecasting: {e}")
             return jsonify({'error': str(e)}), 500
+
 
 
 
