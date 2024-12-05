@@ -186,15 +186,20 @@ const Scan = () => {
         </div>
         {showDiseaseList && (
           <div className="dropdown-list">
-            <ul>
-              {Object.entries(diseaseCounts).map(([disease, count]) => (
-                <li key={disease}>
-                  <span className="disease-name">{disease}</span>: <span className="disease-count">{count}</span>
-                </li>
-              ))}
-            </ul>
+            {Object.keys(diseaseCounts).length > 0 ? (
+              <ul>
+                {Object.entries(diseaseCounts).map(([disease, count]) => (
+                  <li key={disease}>
+                    <span className="disease-name">{disease}</span>: <span className="disease-count">{count}</span>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <div className="no-data-text">No data available yet.</div>
+            )}
           </div>
         )}
+
         <div className="scan-info-box">
           <div className="scan-title">
             <h2>Total Scans</h2>

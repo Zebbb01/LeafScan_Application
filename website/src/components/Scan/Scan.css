@@ -132,6 +132,15 @@
   margin: 15px 0;
 }
 
+.no-data-text {
+  font-size: 14px;
+  font-style: italic;
+  color: gray;
+  text-align: center;
+  padding: 10px;
+}
+
+
 /* Smooth Transition */
 @keyframes fadeIn {
   from {
