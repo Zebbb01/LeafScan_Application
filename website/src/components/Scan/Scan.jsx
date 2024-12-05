@@ -5,6 +5,7 @@ import Spinner from "../Spinner/Spinner";
 
 const Scan = () => {
   const [totalScans, setTotalScans] = useState(0);
+  const [userTotalScans, setUserTotalScans] = useState(0);
   const [scansToday, setScansToday] = useState(0);
   const [image, setImage] = useState(null);
   const [disease, setDisease] = useState(null);
@@ -27,6 +28,7 @@ const Scan = () => {
       const response = await fetch('/api/get_scan_counts');
       const data = await response.json();
       setTotalScans(data.total_scans);
+      setUserTotalScans(data.total_user_scans);
       setScansToday(data.scans_today);
     } catch (error) {
       console.error('Error fetching scan counts:', error);
@@ -179,7 +181,7 @@ const Scan = () => {
           <div className="scan-title">
             <h2>Total Diseases</h2>
             <p><strong>{totalDiseasesDetected}</strong></p>
-            <div className="dropdown-icon">
+            <div className="dropdown-icon-graph">
               {showDiseaseList ? <FaChevronRight /> : <FaChevronLeft />}
             </div>
           </div>
@@ -210,6 +212,12 @@ const Scan = () => {
           <div className="scan-title">
             <h2>Scans Today</h2>
             <p><strong>{scansToday}</strong></p>
+          </div>
+        </div>
+        <div className="scan-info-box">
+          <div className="scan-title">
+            <h2>Your Scans Total</h2>
+            <p><strong>{userTotalScans}</strong></p>
           </div>
         </div>
         <div className="scan-info-box">

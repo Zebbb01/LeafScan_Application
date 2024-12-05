@@ -1,14 +1,14 @@
 /* General Styles */
 /* Scan Header Styles */
 .scan-header {
-  width: 50%;
+  width: 44%;
   margin-bottom: 50px;
   text-align: center;
   display: flex;
   flex-wrap: unset;
   flex-direction: row;
   justify-content: space-around; /* Space out each box */
-  gap: 10px; /* Adds space between the boxes */
+  gap: 5px; /* Adds space between the boxes */
   justify-content: center;
 }
 
@@ -52,8 +52,8 @@
 /* Dropdown Styles */
 .dropdown-list {
   position: absolute;
-  top: 126%; /* Aligns with the middle of the Total Diseases box */
-  left: 17%; /* Places the dropdown to the right of the parent box */
+  top: 130%; /* Aligns with the middle of the Total Diseases box */
+  left: 18%; /* Places the dropdown to the right of the parent box */
   transform: translateY(-50%); /* Centers the dropdown vertically */
   background-color: #fff;
   border: 1px solid #ddd;
@@ -96,10 +96,13 @@
 }
 
 /* Dropdown Icon */
-.dropdown-icon {
-  font-size: 16px;
+.dropdown-icon-graph {
+  position: absolute;
+  top: 81%; /* Aligns with the middle of the Total Diseases box */
+  left: 40%; /* Places the dropdown to the right of the parent box */
+  transform: translateY(-50%); /* Centers the dropdown vertically */
+  font-size: 12px;
   color: #555;
-  margin-left: 10px;
   transition: transform 0.3s ease-in-out;
 }
 
@@ -124,12 +127,6 @@
   font-weight: 600;
   color: yellowgreen; /* Custom color for the values */
   margin: 5px 0;
-}
-.scan-info-box-dropdown h3 {
-  font-size: 12px;
-  font-weight: 600;
-  color: yellowgreen; /* Custom color for the values */
-  margin: 15px 0;
 }
 
 .no-data-text {
@@ -450,10 +447,12 @@
   .scan-header {
     flex-wrap:unset;
     width: 50%;
-    gap: 50px;
+    gap: 5px;
+    padding: 10px;
   }
   .scan-title h2 {
     font-size: 20px;
+    margin-inline: 13px;
   }
 
   .scan-info-box {
@@ -477,11 +476,21 @@
   .scan-info-box-dropdown p {
     font-size: 30px;
   }
-  .scan-info-box-dropdown h3 {
-    font-size: 18px;
-  }
-  .scan-header {
-    width: 50%;
 
+  .scan-info-box-dropdown h2 {
+    font-size: 20px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 10px;
+  }
+  .dropdown-icon-graph {
+    position: absolute;
+    top: 87%; /* Aligns with the middle of the Total Diseases box */
+    left: 38%; /* Places the dropdown to the right of the parent box */
+    transform: translateY(-50%); /* Centers the dropdown vertically */
+    font-size: 18px;
+    color: #555;
+    margin-left: 10px;
+    transition: transform 0.3s ease-in-out;
   }
 }

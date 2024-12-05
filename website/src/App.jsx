@@ -27,6 +27,7 @@ const App = () => {
   const [playState, setPlayState] = useState(false);
   const location = useLocation();
   const [isDataLoaded, setIsDataLoaded] = useState(false);
+  const [loadingData, setLoadingData] = useState(true); // Track if data is loading
 
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
@@ -101,18 +102,16 @@ const App = () => {
                       <Title subTitle='Damage Forecasting' title='Forecasted Impact on Cacao Fruit Production' />
                     </Suspense>
                     <Suspense fallback={<Spinner message="Loading Forecast Damage..." />}>
-                      {/* This is where you will see the UploadCsv */}
-                      <UploadCsv setIsDataLoaded={setIsDataLoaded} />
+                      <UploadCsv setIsDataLoaded={setIsDataLoaded} setLoadingData={setLoadingData} />
                     </Suspense>
                     {isDataLoaded && (
                       <Suspense fallback={<Spinner message="Loading BarGraph..." />}>
-                        {/* Once the data is loaded, show the graph */}
                         <ForecastDamage setIsDataLoaded={setIsDataLoaded} isDataLoaded={isDataLoaded} />
                       </Suspense>
                     )}
                     <Suspense fallback={<Spinner message="Loading BarGraph..." />}>
                       <BarGraph />
-                      </Suspense>
+                    </Suspense>
                     <Suspense fallback={<Spinner message="Loading About..." />}>
                       <About setPlayState={setPlayState} />
                     </Suspense>

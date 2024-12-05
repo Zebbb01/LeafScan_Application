@@ -1,6 +1,11 @@
 .chart-container {
-  width: 100%;
-  justify-content: center;
+  width: 80%;
+  max-width: 1200px;
+  margin: 20px auto;
+  padding: 20px;
+  border-radius: 8px;
+  font-family: 'Arial', sans-serif;
+  position: relative;
 }
 
 .chart-container p{

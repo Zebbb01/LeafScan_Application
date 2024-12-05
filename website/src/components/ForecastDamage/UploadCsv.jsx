@@ -5,13 +5,13 @@ const UploadCsv = ({ setIsDataLoaded }) => {
     const [file, setFile] = useState(null);
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(false);
-    const fileInputRef = useRef(null); // Create a ref for the file input
+    const fileInputRef = useRef(null);
 
     const handleFileChange = (e) => {
         const selectedFile = e.target.files[0];
         if (selectedFile && selectedFile.type === 'text/csv') {
             setFile(selectedFile);
-            setError(null);  // Clear any previous error
+            setError(null);
         } else {
             setError('Please select a valid CSV file.');
         }
@@ -24,7 +24,7 @@ const UploadCsv = ({ setIsDataLoaded }) => {
             return;
         }
 
-        setLoading(true); // Start loading
+        setLoading(true);
         const formData = new FormData();
         formData.append('file', file);
 
@@ -35,17 +35,18 @@ const UploadCsv = ({ setIsDataLoaded }) => {
                 throw new Error(result.error || 'Unknown upload error');
             }
 
-            setIsDataLoaded(true);
+            setIsDataLoaded(true); // Trigger data reload in ForecastDamage
         } catch (err) {
             setError(err.message);
         } finally {
-            setLoading(false); // Stop loading
+            setLoading(false);
         }
     };
 
     const handleRemoveFile = () => {
         setFile(null);
-        fileInputRef.current.value = ''; // Reset the file input value
+        fileInputRef.current.value = '';
+        setIsDataLoaded(false); // Set to false when file is removed to reload data
     };
 
     return (
@@ -55,7 +56,7 @@ const UploadCsv = ({ setIsDataLoaded }) => {
                 id="file-upload" 
                 onChange={handleFileChange} 
                 hidden 
-                ref={fileInputRef} // Attach the ref here
+                ref={fileInputRef} 
             />
             <label htmlFor="file-upload" className="upload-csv-label">
                 {file ? `Selected File: ${file.name}` : 'Choose a CSV file'}

@@ -58,8 +58,8 @@ const ForecastLine = () => {
             {
               label: 'Predicted Production',
               data: alignedPredictions.map((y, index) => ({ x: allLabels[index], y })),
-              backgroundColor: 'orange',
-              borderColor: 'orange',
+              backgroundColor: 'green',
+              borderColor: 'green',
               borderWidth: 2,
               fill: false,
               tension: 0.1,
@@ -70,8 +70,8 @@ const ForecastLine = () => {
             {
               label: 'Start of Prediction',
               data: connectingLine,
-              backgroundColor: 'green',
-              borderColor: 'green',
+              backgroundColor: 'orange',
+              borderColor: 'orange',
               borderWidth: 2,
               fill: false,
               tension: 0.1,
@@ -124,6 +124,9 @@ const ForecastLine = () => {
               title: {
                 display: true,
                 text: 'Cacao Fruit Production Forecast',
+                font: {
+                  size: 16,
+                }
               },
               legend: {
                 display: true,

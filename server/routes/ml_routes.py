@@ -31,8 +31,6 @@ def init_ml_routes(app):
 
     CLASS_NAMES = ["Branch Dieback", "Branch Healthy", "Invalid Image", "Cacao Early Blight", "Cacao Healthy", "Cacao Late Blight", "Cacao Leaf Spot"]
 
-
-        
     @app.route("/api/get_scan_counts", methods=["GET"])
     def get_scan_counts():
         try:
@@ -45,21 +43,25 @@ def init_ml_routes(app):
             # Get scans today for the specific user (if logged in)
             user_id = session.get("user_id", None)
             scans_today = 0
-            scanned_today = 0  # This should return how many scans the user has done today
+            total_user_scans = 0  # Total scans by this user
             if user_id:
                 scans_today = db.session.query(ScanRecord).filter(
                     db.func.date(ScanRecord.created_at) == today,
                     ScanRecord.user_id == user_id
                 ).count()
-                user = User.query.get(user_id)
-                if user:
-                    scanned_today = user.scanned_today  # Fetch the actual scanned_today value for the user
+                # Calculate total scans for the user
+                total_user_scans = db.session.query(ScanRecord).filter(
+                    ScanRecord.user_id == user_id
+                ).count()
 
             return jsonify({
                 "total_scans": total_scans,
                 "scans_today": scans_today,
-                "scanned_today": scanned_today  # Ensure this is returned
+                "total_user_scans": total_user_scans  # Include if needed
             })
+        except Exception as e:
+            return jsonify({"error": str(e)}), 500
+
 
         except Exception as e:
             return jsonify({"error": str(e)}), 500
@@ -262,12 +264,15 @@ def init_ml_routes(app):
             try:
                 # Read the uploaded CSV file into a pandas DataFrame
                 data = pd.read_csv(file)
-                
+
                 # Check if the necessary columns exist in the CSV
                 if 'Date' not in data.columns or 'Production' not in data.columns:
                     return jsonify({'error': 'Invalid CSV format. Ensure the CSV has Date and Production columns.'}), 400
 
-                # Validate and process each row
+                # Clear the existing records in the database (or set to empty)
+                db.session.query(Production).delete()
+
+                # Process the new data
                 for _, row in data.iterrows():
                     # Convert the date column, handle invalid formats
                     try:
@@ -284,25 +289,30 @@ def init_ml_routes(app):
                     except ValueError:
                         return jsonify({'error': f"Invalid production value in row: {row}"}), 400
 
-                    # Check if the record already exists
-                    existing_record = db.session.query(Production).filter_by(date=date).first()
-
-                    if existing_record:
-                        # If record exists, update the production value
-                        existing_record.value = production_value
-                    else:
-                        # If record does not exist, create a new record
-                        new_record = Production(date=date, value=production_value)
-                        db.session.add(new_record)
+                    # Add the new record to the database
+                    new_record = Production(date=date, value=production_value)
+                    db.session.add(new_record)
 
                 db.session.commit()
-                return jsonify({'message': 'File uploaded successfully. Data updated if necessary.'}), 200
+                return jsonify({'message': 'File uploaded successfully. Data has been replaced.'}), 200
 
             except Exception as e:
                 return jsonify({'error': f"An error occurred: {str(e)}"}), 500
         else:
             return jsonify({'error': 'Invalid file format. Please upload a CSV file.'}), 400
 
+
+    @app.route('/api/production-raw', methods=['GET'])
+    def production_raw():
+        try:
+            # Fetch production data from the database
+            production_data = fetch_production_data()
+            
+            # Return the data as JSON
+            return jsonify({'production': production_data.to_dict(orient='records')}), 200
+        except Exception as e:
+            app.logger.error(f"Error fetching production data: {e}")
+            return jsonify({'error': str(e)}), 500
 
 
     # Utility Functions
@@ -335,7 +345,7 @@ def init_ml_routes(app):
         except Exception as e:
             app.logger.error(f"Error fetching disease data: {e}")
             raise
-    def time_series_k_fold(data, k=5, seasonal_periods=4, forecast_steps=8):
+    def time_series_k_fold(data, k=5, seasonal_periods=4):
         # Initialize KFold (here k=5 for example)
         kf = KFold(n_splits=k, shuffle=False)
         
@@ -388,13 +398,13 @@ def init_ml_routes(app):
             leaf_disease_count = disease_data['leaf_diseases']
             branch_disease_count = disease_data['branch_diseases']
 
-            # Calculate losses
+            # Calculate percentage losses
             leaf_disease_loss = (leaf_disease_count // 10) * 0.03 if leaf_disease_count >= 10 else 0
             branch_disease_loss = (branch_disease_count // 10) * 0.1 if branch_disease_count >= 10 else 0
-            total_loss = leaf_disease_loss + branch_disease_loss
+            total_loss_percentage = leaf_disease_loss + branch_disease_loss
 
             # Perform k-fold cross-validation
-            cv_metrics = time_series_k_fold(production_data, k=5)  # k=5 folds for example
+            cv_metrics = time_series_k_fold(production_data, k=10)  # k=5 folds for example
 
             # Train the model and forecast the first quarter
             model = ExponentialSmoothing(
@@ -405,8 +415,9 @@ def init_ml_routes(app):
             ).fit()
             first_quarter_forecast = model.forecast(1)
             
-            # Adjust the first quarter production by applying the loss
-            adjusted_first_quarter = first_quarter_forecast[0] * (1 - total_loss) if total_loss > 0 else first_quarter_forecast[0]
+            # Calculate actual losses for the first quarter
+            actual_loss_first_quarter = first_quarter_forecast[0] * total_loss_percentage if total_loss_percentage > 0 else 0
+            adjusted_first_quarter = first_quarter_forecast[0] - actual_loss_first_quarter
 
             # Update the production data with the adjusted first quarter
             last_date = production_data.index[-1]
@@ -422,22 +433,26 @@ def init_ml_routes(app):
             ).fit()
             remaining_forecast = model.forecast(7)
             
-            # Adjust the remaining quarters for predicted losses
-            adjusted_remaining_forecast = [
-                value * (1 - total_loss) if total_loss > 0 else value
+            # Calculate actual losses and adjusted values for the remaining quarters
+            actual_losses = [
+                value * total_loss_percentage if total_loss_percentage > 0 else 0
                 for value in remaining_forecast
+            ]
+            adjusted_remaining_forecast = [
+                value - loss for value, loss in zip(remaining_forecast, actual_losses)
             ]
 
             # Combine forecasts
             forecast_dates = [last_date + pd.DateOffset(months=3 * i) for i in range(1, 9)]
             combined_forecast = [adjusted_first_quarter] + adjusted_remaining_forecast
+            actual_losses = [actual_loss_first_quarter] + actual_losses
 
             response = {
                 'forecast_dates': [date.strftime('%Y-%m-%d') for date in forecast_dates],
                 'next_8_quarters_forecast': [first_quarter_forecast[0]] + remaining_forecast.tolist(),
                 'adjusted_production': combined_forecast,
-                'predicted_losses': [total_loss] * 8,
-                'evaluation_metrics': cv_metrics,  # Return cross-validation metrics
+                'actual_losses': actual_losses,  # Absolute losses in production values
+                'evaluation_metrics': cv_metrics,
                 'leaf_disease_loss': leaf_disease_loss,
                 'branch_disease_loss': branch_disease_loss,
                 'leaf_disease_count': leaf_disease_count,
@@ -449,10 +464,6 @@ def init_ml_routes(app):
             app.logger.error(f"Error during forecasting: {e}")
             return jsonify({'error': str(e)}), 500
 
-
-
-
-    
      # ---------------------------------- ExponentialSmoothing Model ------------------------------------ #
     
     @app.route('/api/prediction', methods=['GET'])
