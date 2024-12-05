@@ -1,4 +1,150 @@
 /* General Styles */
+/* Scan Header Styles */
+.scan-header {
+  width: 50%;
+  margin-bottom: 50px;
+  text-align: center;
+  display: flex;
+  flex-wrap: unset;
+  flex-direction: row;
+  justify-content: space-around; /* Space out each box */
+  gap: 10px; /* Adds space between the boxes */
+  justify-content: center;
+}
+
+/* Title Section */
+.scan-title h2 {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+/* Information Box */
+.scan-info-box {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  width: 50%;
+  max-width: 250px; /* Limits box width for better appearance */
+  text-align: center; /* Centers the content inside the box */
+}
+
+/* Scan Information */
+.scan-info-box p {
+  font-size: 15px;
+  font-weight: 600;
+  color: yellowgreen; /* Custom color for the values */
+  margin: 5px 0;
+}
+.scan-info-box h3 {
+  font-size: 12px;
+  font-weight: 600;
+  color: yellowgreen; /* Custom color for the values */
+  margin: 15px 0;
+}
+
+/* Dropdown Styles */
+.dropdown-list {
+  position: absolute;
+  top: 126%; /* Aligns with the middle of the Total Diseases box */
+  left: 17%; /* Places the dropdown to the right of the parent box */
+  transform: translateY(-50%); /* Centers the dropdown vertically */
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 10px;
+  width: 200px; /* Fixed width for the dropdown */
+  z-index: 10;
+}
+
+.dropdown-list ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.dropdown-list li {
+  padding: 8px 10px;
+  border-bottom: 1px solid #eee;
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
+  display: flex;
+  justify-content: space-between;
+}
+
+.dropdown-list li:last-child {
+  border-bottom: none;
+}
+
+.dropdown-list li:hover {
+  background-color: #f5f5f5;
+  cursor: pointer;
+}
+
+.disease-count{
+  color: yellowgreen;
+  font-size: 16px;
+  flex-grow: calc(1 - 2 / 3);
+}
+
+/* Dropdown Icon */
+.dropdown-icon {
+  font-size: 16px;
+  color: #555;
+  margin-left: 10px;
+  transition: transform 0.3s ease-in-out;
+}
+
+.scan-info-box-dropdown {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  width: 50%;
+  max-width: 250px; /* Limits box width for better appearance */
+  text-align: center; /* Centers the content inside the box */
+  cursor: pointer;
+  position: relative; /* Makes it the reference point for the dropdown */
+}
+/* Scan Information */
+.scan-info-box-dropdown p {
+  font-size: 15px;
+  font-weight: 600;
+  color: yellowgreen; /* Custom color for the values */
+  margin: 5px 0;
+}
+.scan-info-box-dropdown h3 {
+  font-size: 12px;
+  font-weight: 600;
+  color: yellowgreen; /* Custom color for the values */
+  margin: 15px 0;
+}
+
+/* Smooth Transition */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
 .scan-container {
   display: flex;
   flex-direction: column;
@@ -269,7 +415,7 @@
 
 
 /* Responsive Layout */
-@media (min-width: 768px) {
+@media (min-width: 1200px) {
   .image-preview {
     display: grid;
     grid-template-columns: 1fr 1fr; /* Image on left, info on right */
@@ -291,5 +437,42 @@
     grid-column: 1 / span 2; /* Buttons span both columns */
     justify-content: center;
     width: 100%;
+  }
+  .scan-header {
+    flex-wrap:unset;
+    width: 50%;
+    gap: 50px;
+  }
+  .scan-title h2 {
+    font-size: 20px;
+  }
+
+  .scan-info-box {
+    max-width: 100%; /* Make boxes take full width on smaller screens */
+    padding: 15px;
+    width: 100%;
+  }
+
+  .scan-info-box p {
+    font-size: 30px;
+  }
+  .scan-info-box h3 {
+    font-size: 18px;
+  }
+  .scan-info-box-dropdown {
+    max-width: 100%; /* Make boxes take full width on smaller screens */
+    padding: 15px;
+    width: 100%;
+  }
+
+  .scan-info-box-dropdown p {
+    font-size: 30px;
+  }
+  .scan-info-box-dropdown h3 {
+    font-size: 18px;
+  }
+  .scan-header {
+    width: 50%;
+
   }
 }

@@ -1,25 +1,81 @@
-import { useState, useEffect } from 'react';
-import './Scan.css';
-import Spinner from '../Spinner/Spinner';
+import { useState, useEffect } from "react";
+import "./Scan.css";
+import { FaChevronRight, FaChevronLeft } from "react-icons/fa";
+import Spinner from "../Spinner/Spinner";
 
 const Scan = () => {
+  const [totalScans, setTotalScans] = useState(0);
+  const [scansToday, setScansToday] = useState(0);
   const [image, setImage] = useState(null);
   const [disease, setDisease] = useState(null);
   const [confidence, setConfidence] = useState(null);
   const [prevention, setPrevention] = useState(null);
-  const [cause, setCause] = useState(null); 
+  const [cause, setCause] = useState(null);
   const [contributingFactors, setContributingFactors] = useState(null);
   const [moreInfoUrl, setMoreInfoUrl] = useState(null);
   const [loading, setLoading] = useState(false);
   const [scanned, setScanned] = useState(false);
   const [showCancelConfirm, setShowCancelConfirm] = useState(false);
+  const [diseaseCounts, setDiseaseCounts] = useState({});
+  const [totalDiseasesDetected, setTotalDiseasesDetected] = useState(0);
+  const [showDiseaseList, setShowDiseaseList] = useState(false);
+  const [currentTime, setCurrentTime] = useState(new Date()); // State for real-time clock
 
-  // Reset the overlay when component unmounts or when the page changes
+  // Fetch the scan counts from the server
+  const fetchScanCounts = async () => {
+    try {
+      const response = await fetch('/api/get_scan_counts');
+      const data = await response.json();
+      setTotalScans(data.total_scans);
+      setScansToday(data.scans_today);
+    } catch (error) {
+      console.error('Error fetching scan counts:', error);
+    }
+  };
+
+  // Fetch the disease counts from the server
+  const fetchDiseaseCounts = async () => {
+    try {
+      const response = await fetch('/api/get_disease_counts');
+      const data = await response.json();
+      setTotalDiseasesDetected(data.total_diseases_detected);
+      setDiseaseCounts(data.disease_counts);
+    } catch (error) {
+      console.error('Error fetching disease counts:', error);
+    }
+  };
+
+  // Auto-refresh logic
   useEffect(() => {
-    return () => {
-      setShowCancelConfirm(false); // Clean up the confirmation dialog state
-    };
+    fetchScanCounts();
+    fetchDiseaseCounts();
+
+    const interval = setInterval(() => {
+      fetchScanCounts();
+      fetchDiseaseCounts();
+    }, 1000); // Refresh every 10 seconds
+
+    return () => clearInterval(interval); // Cleanup interval on unmount
   }, []);
+
+  // Real-time clock logic
+  useEffect(() => {
+    const clockInterval = setInterval(() => {
+      setCurrentTime(new Date()); // Update current time every second
+    }, 1000);
+
+    return () => clearInterval(clockInterval); // Cleanup interval on unmount
+  }, []);
+
+    // Format current time as "April 12, 2004"
+    const formattedDate = new Intl.DateTimeFormat('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+      hour: 'numeric',
+      minute: 'numeric',
+      second: 'numeric',
+    }).format(currentTime);
 
   const handleImageUpload = (event) => {
     const file = event.target.files[0];
@@ -30,7 +86,7 @@ const Scan = () => {
         setDisease(null);
         setConfidence(null);
         setPrevention(null);
-        setCause(null); 
+        setCause(null);
         setContributingFactors(null);
         setMoreInfoUrl(null);
         setScanned(false);
@@ -38,6 +94,7 @@ const Scan = () => {
       reader.readAsDataURL(file);
     }
   };
+
 
   const handleScan = async () => {
     if (!image) return;
@@ -64,12 +121,15 @@ const Scan = () => {
 
       const data = await uploadResponse.json();
       setDisease(data.disease);
-      setConfidence(data.confidence ? (data.confidence * 100).toFixed(2) : null);
+      setConfidence(data.confidence ? (data.confidence * 1).toFixed(2) : null);
       setPrevention(data.prevention);
-      setCause(data.cause); 
+      setCause(data.cause);
       setContributingFactors(data.contributing_factors);
       setMoreInfoUrl(data.more_info_url);
       setScanned(true);
+
+      await fetchScanCounts();
+      await fetchDiseaseCounts();
     } catch (error) {
       console.error('There was an error scanning the image:', error);
     } finally {
@@ -98,17 +158,14 @@ const Scan = () => {
       window.open(moreInfoUrl, '_blank');
     }
   };
-  
 
-  return (
+  return ( 
+  <>
     <div className="scan-container">
       {loading && <Spinner />}
       {showCancelConfirm && (
         <>
-          {/* Overlay with dynamically applied 'show' class */}
           <div className={`overlay ${showCancelConfirm ? 'show' : ''}`} onClick={() => setShowCancelConfirm(false)}></div>
-
-          {/* Confirmation dialog */}
           <div className="confirmation-dialog">
             <p>Are you sure you want to cancel?</p>
             <button onClick={confirmCancel}>Yes</button>
@@ -117,6 +174,47 @@ const Scan = () => {
         </>
       )}
 
+      <div className="scan-header">
+        <div className="scan-info-box-dropdown" onClick={() => setShowDiseaseList(!showDiseaseList)}>
+          <div className="scan-title">
+            <h2>Total Diseases</h2>
+            <p><strong>{totalDiseasesDetected}</strong></p>
+            <div className="dropdown-icon">
+              {showDiseaseList ? <FaChevronRight /> : <FaChevronLeft />}
+            </div>
+          </div>
+        </div>
+        {showDiseaseList && (
+          <div className="dropdown-list">
+            <ul>
+              {Object.entries(diseaseCounts).map(([disease, count]) => (
+                <li key={disease}>
+                  <span className="disease-name">{disease}</span>: <span className="disease-count">{count}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+        <div className="scan-info-box">
+          <div className="scan-title">
+            <h2>Total Scans</h2>
+            <p><strong>{totalScans}</strong></p>
+          </div>
+        </div>
+        <div className="scan-info-box">
+          <div className="scan-title">
+            <h2>Scans Today</h2>
+            <p><strong>{scansToday}</strong></p>
+          </div>
+        </div>
+        <div className="scan-info-box">
+        <div className="scan-title">
+              <h2>Current Date/Time</h2>
+              <h3>{formattedDate}</h3>
+            </div>
+        </div>
+      </div>
+     
       {image ? (
         <div className="image-preview">
           <div className="scrollable-prevention-info">
@@ -169,7 +267,7 @@ const Scan = () => {
         </div>
       )}
     </div>
+    </>
   );
 };
-
 export default Scan;

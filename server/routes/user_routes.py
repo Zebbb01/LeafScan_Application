@@ -212,9 +212,10 @@ def init_user_routes(app, mail):  # Accept mail as a parameter
 
         try:
             db.session.commit()
-            return jsonify({"updated": True}), 200
+            return jsonify({"updated": True, "scan_count": user.scan_count}), 200
         except Exception as e:
             print(e)
             db.session.rollback()
             return jsonify({"error": "Could not update profile"}), 500
+
 

@@ -219,7 +219,7 @@ export default function ScannerScreen() {
                     <View style={styles.column}>
                       <Text style={styles.modalLabel}>Confidence:</Text>
                       <Text style={styles.modalText}>
-                        {(scanResult.confidence * 100).toFixed(2)}%
+                        {(scanResult.confidence * 1).toFixed(2)}%
                       </Text>
                   </View>
 

@@ -19,11 +19,14 @@ const UpdateProfile = React.lazy(() => import('./components/UpdateProfile/Update
 const Scan = React.lazy(() => import('./components/Scan/Scan'));
 const Forecast = React.lazy(() => import('./components/Forecast/ForecastLine'));
 const BarGraph = React.lazy(() => import('./components/BarGraph/BarGraph'));
+const UploadCsv = React.lazy(() => import('./components/ForecastDamage/UploadCsv'));
+const ForecastDamage = React.lazy(() => import('./components/ForecastDamage/ForecastDamage'));
 
 const App = () => {
   const [user, setUser] = useState(null);
   const [playState, setPlayState] = useState(false);
   const location = useLocation();
+  const [isDataLoaded, setIsDataLoaded] = useState(false);
 
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
@@ -94,9 +97,22 @@ const App = () => {
                     <Suspense fallback={<Spinner message="Loading Forecast..." />}>
                       <Forecast />
                     </Suspense>
+                    <Suspense fallback={<Spinner message="Loading Title..." />}>
+                      <Title subTitle='Damage Forecasting' title='Forecasted Impact on Cacao Fruit Production' />
+                    </Suspense>
+                    <Suspense fallback={<Spinner message="Loading Forecast Damage..." />}>
+                      {/* This is where you will see the UploadCsv */}
+                      <UploadCsv setIsDataLoaded={setIsDataLoaded} />
+                    </Suspense>
+                    {isDataLoaded && (
+                      <Suspense fallback={<Spinner message="Loading BarGraph..." />}>
+                        {/* Once the data is loaded, show the graph */}
+                        <ForecastDamage setIsDataLoaded={setIsDataLoaded} isDataLoaded={isDataLoaded} />
+                      </Suspense>
+                    )}
                     <Suspense fallback={<Spinner message="Loading BarGraph..." />}>
                       <BarGraph />
-                    </Suspense>
+                      </Suspense>
                     <Suspense fallback={<Spinner message="Loading About..." />}>
                       <About setPlayState={setPlayState} />
                     </Suspense>

@@ -1,0 +1,89 @@
+.forecast-damage-chart-container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 20px auto;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  background-color: #ffffff;
+  border: 1px solid #ddd;
+  font-family: 'Arial', sans-serif;
+  position: relative;
+}
+
+.forecast-damage-chart-container h2 {
+  text-align: center;
+  font-size: 20px;
+  color: #555;
+  margin: 0; /* Remove default margin */
+  padding: 10px 0; /* Optional: adjust padding if needed */
+  position: absolute;
+  top: 20px; /* Adjust to control the distance from the top */
+  left: 50%;
+  transform: translateX(-50%); /* Center the title horizontally */
+}
+
+.forecast-details p {
+  text-align: left;
+  font-size: 14px;
+  margin-bottom: 5px;
+  color: #333;
+  margin-left: 4%;
+}
+
+.forecast-mae-display {
+  text-align: center;
+  font-size: 18px;
+  color: #333;
+  margin-top: 20px;
+}
+
+.forecast-loading {
+  font-size: 1.2em;
+  color: #888;
+  text-align: center;
+  margin-top: 50px;
+}
+
+.forecast-error {
+  color: red;
+  text-align: center;
+  font-size: 1.2em;
+}
+
+.evaluation-metrics {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+}
+
+.evaluation-metrics p {
+  font-size: 13px;
+}
+
+
+@media (max-width: 1000px) {
+  .forecast-chart-container {
+    padding: 15px;
+  }
+  .forecast-damage-chart-container h2 {
+    font-size: 13px;
+  }
+  .forecast-details p {
+    font-size: 10px;
+  }
+  
+}
+
+@media (max-width: 768px) {
+  .forecast-chart-container {
+    padding: 15px;
+  }
+  .forecast-damage-chart-container h2 {
+    font-size: 12px;
+  }
+  .forecast-details p {
+    font-size: 8px;
+  }
+  
+}

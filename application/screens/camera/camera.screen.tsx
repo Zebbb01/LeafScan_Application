@@ -12,7 +12,9 @@ export default function CameraScreen() {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [isCameraReady, setIsCameraReady] = useState(false);
   const [photoTaken, setPhotoTaken] = useState(false);
-  const [loading, setLoading] = useState(false); // New loading state
+  const [loading, setLoading] = useState(false);
+  const [permissionChecked, setPermissionChecked] = useState(false); // New state
+  const [isRefreshing, setIsRefreshing] = useState(false); // For one-time refresh
   const cameraRef = useRef<Camera>(null);
   const router = useRouter();
 
@@ -21,10 +23,20 @@ export default function CameraScreen() {
       const { status } = await Camera.requestCameraPermissionsAsync();
       if (status !== 'granted') {
         Alert.alert('Camera permission is required to use this feature.');
+      } else if (!permissionChecked) {
+        setPermissionChecked(true);
+        setIsRefreshing(true); // Trigger a refresh
       }
     };
     checkPermissions();
   }, []);
+
+  useEffect(() => {
+    if (isRefreshing) {
+      // Simulate a refresh by resetting states after a short delay
+      setTimeout(() => setIsRefreshing(false), 100);
+    }
+  }, [isRefreshing]);
 
   useFocusEffect(
     React.useCallback(() => {
@@ -53,7 +65,7 @@ export default function CameraScreen() {
 
   const takePhoto = async () => {
     if (cameraRef.current && isCameraReady && !photoTaken && !loading) {
-      setLoading(true); // Start loading
+      setLoading(true);
       try {
         const photo = await cameraRef.current.takePictureAsync({
           quality: 0.5,
@@ -72,7 +84,7 @@ export default function CameraScreen() {
         console.error('Error taking photo:', error);
         Alert.alert('Error', 'Failed to take a photo.');
       } finally {
-        setLoading(false); // Stop loading after photo is taken
+        setLoading(false);
       }
     }
   };
@@ -107,6 +119,15 @@ export default function CameraScreen() {
     router.push('/dashboard');
   }
 
+  if (isRefreshing) {
+    return (
+      <View style={styles.container}>
+        <ActivityIndicator size="large" color="#fff" />
+        <Text style={styles.loadingText}>Refreshing...</Text>
+      </View>
+    );
+  }
+
   return (
     <View style={styles.container}>
       <Camera
@@ -136,7 +157,7 @@ export default function CameraScreen() {
         <TouchableOpacity
           style={styles.scanButton}
           onPress={takePhoto}
-          disabled={photoTaken || loading} // Disable during loading
+          disabled={photoTaken || loading}
           activeOpacity={0.7}
         >
           <Icon
