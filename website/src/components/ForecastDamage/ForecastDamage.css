@@ -42,6 +42,29 @@
   font-size: 11px;
 }
 
+/* Style for refresh button container */
+.refresh-button-container {
+  margin-top: 20px;
+  text-align: center;
+}
+
+/* Style for refresh button */
+.refresh-button {
+  background-color: yellowgreen; /* Green background */
+  color: white;
+  font-size: 16px;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.refresh-button:hover {
+  background-color: #45a049; /* Darker green on hover */
+}
+
+
 
 @media (max-width: 1000px) {
   .forecast-chart-container {

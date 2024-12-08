@@ -35,51 +35,36 @@ const ForecastLine = () => {
         const alignedPredictions = [...Array(labels.length).fill(null), ...predictions];
 
         // Create the line connecting the last actual point and first predicted point
-        const connectingLine = [
-          { x: labels[labels.length - 1], y: actualProductions[actualProductions.length - 1] },
-          { x: data.dates[0], y: predictions[0] }
-        ];
+        const combinedAdjustedProduction = [...actualProductions, ...predictions];
 
         setChartData({
           labels: allLabels,
           datasets: [
             {
               label: 'Actual Production',
-              data: actualProductions.map((y, index) => ({ x: labels[index], y })),
+              data: actualProductions.map((y, index) => ({ x: labels[index], y })), // Ensure proper x-y structure
               backgroundColor: 'blue',
               borderColor: 'blue',
               borderWidth: 2,
               fill: false,
               tension: 0.1,
-              spanGaps: true,
               pointRadius: 0,          // Points are hidden by default
               pointHoverRadius: 5,     // Points become visible on hover
+              showLine: true,          // Ensure the line is rendered
             },
             {
               label: 'Predicted Production',
-              data: alignedPredictions.map((y, index) => ({ x: allLabels[index], y })),
+              data: combinedAdjustedProduction.map((y, index) => ({ x: allLabels[index], y })), // Proper x-y structure
               backgroundColor: 'green',
               borderColor: 'green',
               borderWidth: 2,
               fill: false,
               tension: 0.1,
-              spanGaps: true,
               pointRadius: 0,
               pointHoverRadius: 5,
+              showLine: true,          // Ensure the line is rendered
             },
-            {
-              label: 'Start of Prediction',
-              data: connectingLine,
-              backgroundColor: 'orange',
-              borderColor: 'orange',
-              borderWidth: 2,
-              fill: false,
-              tension: 0.1,
-              spanGaps: true,
-              pointRadius: 0,
-              pointHoverRadius: 5,
-            }
-          ]          
+          ],                   
         });
         setMae(data.mae);  // Set the MAE value
         setLoading(false);
@@ -126,11 +111,14 @@ const ForecastLine = () => {
                 text: 'Cacao Fruit Production Forecast',
                 font: {
                   size: 16,
-                }
+                },
               },
               legend: {
                 display: true,
                 position: 'top',
+                labels: {
+                  usePointStyle: true,  // Use point style for better legend toggle behavior
+                },
               },
               tooltip: {
                 enabled: true,
@@ -142,21 +130,21 @@ const ForecastLine = () => {
                 borderColor: '#ccc',
                 borderWidth: 1,
                 callbacks: {
-                  title: function(tooltipItems) {
+                  title: function (tooltipItems) {
                     return tooltipItems[0].label;
                   },
-                  label: function(tooltipItem) {
+                  label: function (tooltipItem) {
                     return `Production: ${tooltipItem.raw.y.toFixed(2)} Metric Tons`;
-                  }
-                }
-              }
+                  },
+                },
+              },
             },
             hover: {
               mode: 'nearest',
               intersect: false,
             },
             events: ['mousemove', 'mouseout', 'click'], // Events to listen for hover behavior
-          }} 
+          }}          
         />
 
       </div>

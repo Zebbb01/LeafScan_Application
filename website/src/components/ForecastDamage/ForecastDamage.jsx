@@ -25,22 +25,25 @@ const ForecastDamage = ({ isDataLoaded }) => {
   const fetchForecastData = async () => {
     setLoading(true);
     setError(null);
-
+  
     try {
       const response = await fetch('/api/forecast-losses');
       if (!response.ok) throw new Error('Failed to fetch forecast data');
-
+  
       const data = await response.json();
       setForecastDetails(data);
-
+  
       const labels = data.forecast_dates;
       const forecastData = data.next_8_quarters_forecast.map(value => parseFloat(value.toFixed(2)));
       const lossImpactData = data.actual_losses.map(value => parseFloat(value.toFixed(2)));
       const adjustedData = data.adjusted_production.map(value => parseFloat(value.toFixed(2)));
-
+  
       const rawLabels = rawProductionData?.map(item => item.date) || [];
       const rawValues = rawProductionData?.map(item => item.value) || [];
-
+  
+      // Combine raw production and forecasted adjusted production data
+      const combinedAdjustedProduction = [...rawValues, ...adjustedData];
+  
       setChartData({
         labels: [...rawLabels, ...labels],
         datasets: [
@@ -79,7 +82,7 @@ const ForecastDamage = ({ isDataLoaded }) => {
           },
           {
             label: 'Adjusted Production',
-            data: [...Array(rawValues.length).fill(null), ...adjustedData],
+            data: combinedAdjustedProduction, // Use combined data for continuous line
             backgroundColor: 'green',
             borderColor: 'green',
             borderWidth: 2,
@@ -110,17 +113,17 @@ const ForecastDamage = ({ isDataLoaded }) => {
     }
   }, [rawProductionData]);
 
-  // Set interval to refresh data every 20 seconds
-  useEffect(() => {
-    const interval = setInterval(() => {
-      fetchRawData();
-      fetchForecastData();
-    }, 20000);
+  // // Set interval to refresh data every 20 seconds
+  // useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     fetchRawData();
+  //     fetchForecastData();
+  //   }, 20000);
 
-    return () => clearInterval(interval);
-  }, []);
+  //   return () => clearInterval(interval);
+  // }, []);
 
-  if (loading) return ;
+  if (loading) return <div>Loading...</div>;
   if (error) return <div className="forecast-error">Error: {error}</div>;
 
   const leafDiseaseLoss = forecastDetails ? forecastDetails.leaf_disease_loss * 100 : 0;
@@ -176,6 +179,11 @@ const ForecastDamage = ({ isDataLoaded }) => {
     events: ['mousemove', 'mouseout', 'click'],
   };
 
+  const handleRefresh = () => {
+    fetchRawData();
+    fetchForecastData();
+  };
+
   return (
     <div className="forecast-damage-chart-container">
       {evaluationMetrics && (
@@ -192,6 +200,11 @@ const ForecastDamage = ({ isDataLoaded }) => {
       )}
 
       <Line data={chartData} options={options} />
+
+      {/* Refresh Button */}
+      <div className="refresh-button-container">
+        <button className="refresh-button" onClick={handleRefresh}>Refresh Data</button>
+      </div>
     </div>
   );
 };

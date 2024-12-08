@@ -77,7 +77,7 @@ const BarGraph = () => {
                             plugins: {
                                 title: {
                                     display: true,
-                                    text: 'Cacao Fruit Production by Year',
+                                    text: 'All Cacao Fruit Production Per Year',
                                 },
                                 legend: {
                                     display: false, // Disable legend if not needed

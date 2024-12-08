@@ -1,0 +1,113 @@
+/* Container for the description and graph */
+.LossGraph-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    max-width: 1240px;
+    margin: 20px auto;
+    padding: 20px;
+}
+
+/* Description section */
+.LossGraph-description {
+    text-align: center;
+    width: 100%;
+    padding: 10px;
+}
+
+.LossGraph-description h2 {
+    font-size: 1.6rem;
+    margin-bottom: 10px;
+}
+
+.LossGraph-description p {
+    width: 65%;
+    margin: 10px auto;
+    text-align: justify;
+    text-indent: 40px;
+    color: #555;
+}
+
+/* Chart section */
+.LossGraph-chart {
+    position: relative;
+    width: 100%;
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column; /* Ensures button is placed below chart */
+    gap: 20px;
+}
+
+/* Chart container for responsive resizing */
+.LossGraph-chart .chart-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    max-height: 600px;
+}
+
+/* Make the canvas responsive */
+.LossGraph-chart canvas {
+    width: 100% !important;
+    height: auto !important;
+}
+
+/* Loading and error states */
+.bar-chart .loading,
+.bar-chart .error {
+    text-align: center;
+    font-size: 1.5rem;
+    padding: 15px;
+    border-radius: 8px;
+}
+
+.bar-chart .loading {
+    color: #007bff;
+}
+
+.bar-chart .error {
+    color: #ff4d4d;
+    background-color: #ffe6e6;
+}
+
+/* Style for refresh button container */
+.refresh-button-container {
+    position: absolute;
+    top: 40px; /* Position at the bottom of the chart */
+    right: 0px;
+    transform: translateX(-50%); /* Center horizontally */
+}
+
+/* Style for refresh button */
+.refresh-button {
+    background-color: yellowgreen; /* Green background */
+    color: white;
+    font-size: 16px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.refresh-button:hover {
+    background-color: #45a049; /* Darker green on hover */
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .LossGraph-container {
+        flex-direction: column; /* Stack columns vertically on smaller screens */
+    }
+
+    .LossGraph-description,
+    .LossGraph-chart {
+        width: 100%; /* Allow both sections to take full width */
+    }
+}

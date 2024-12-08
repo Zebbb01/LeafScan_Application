@@ -21,6 +21,7 @@ const Forecast = React.lazy(() => import('./components/Forecast/ForecastLine'));
 const BarGraph = React.lazy(() => import('./components/BarGraph/BarGraph'));
 const UploadCsv = React.lazy(() => import('./components/ForecastDamage/UploadCsv'));
 const ForecastDamage = React.lazy(() => import('./components/ForecastDamage/ForecastDamage'));
+const LossGraph = React.lazy(() => import('./components/LossGraph/LossGraph'));
 
 const App = () => {
   const [user, setUser] = useState(null);
@@ -109,6 +110,9 @@ const App = () => {
                         <ForecastDamage setIsDataLoaded={setIsDataLoaded} isDataLoaded={isDataLoaded} />
                       </Suspense>
                     )}
+                    <Suspense fallback={<Spinner message="Loading LossGraph..." />}>
+                      <LossGraph />
+                    </Suspense>
                     <Suspense fallback={<Spinner message="Loading BarGraph..." />}>
                       <BarGraph />
                     </Suspense>

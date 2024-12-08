@@ -463,6 +463,44 @@ def init_ml_routes(app):
         except Exception as e:
             app.logger.error(f"Error during forecasting: {e}")
             return jsonify({'error': str(e)}), 500
+        
+    @app.route('/api/production-losses', methods=['GET'])
+    def production_losses():
+        try:
+            # Fetch production data from the database
+            production_data = fetch_production_data()
+
+            if production_data.empty:
+                return jsonify({'error': 'No production data available. Please upload data first.'}), 400
+
+            # Fetch disease data
+            disease_data = fetch_disease_data()
+            leaf_disease_count = disease_data['leaf_diseases']
+            branch_disease_count = disease_data['branch_diseases']
+
+            # Calculate loss percentages
+            leaf_disease_loss = (leaf_disease_count // 10) * 0.03 if leaf_disease_count >= 10 else 0
+            branch_disease_loss = (branch_disease_count // 10) * 0.1 if branch_disease_count >= 10 else 0
+            total_loss_percentage = leaf_disease_loss + branch_disease_loss
+
+            # Apply losses to production data
+            production_data['adjusted_production'] = production_data['value'] * (1 - total_loss_percentage)
+
+            # Prepare response data
+            response = {
+                'dates': production_data['date'].tolist(),
+                'production_raw': production_data['value'].tolist(),
+                'adjusted_production': production_data['adjusted_production'].round(2).tolist(),
+                'loss_percentage': round(total_loss_percentage * 100, 2),
+                'leaf_disease_count': leaf_disease_count,
+                'branch_disease_count': branch_disease_count
+            }
+
+            return jsonify(response), 200
+        except Exception as e:
+            app.logger.error(f"Error calculating production losses: {e}")
+            return jsonify({'error': str(e)}), 500
+
 
      # ---------------------------------- ExponentialSmoothing Model ------------------------------------ #
     
