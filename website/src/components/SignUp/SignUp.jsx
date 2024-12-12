@@ -65,7 +65,7 @@ const SignUp = () => {
           });
         }).catch(err => {
           setLoading(false);
-          const errorMessage = err.response?.data?.error || 'An error occurred while signing up';
+          const errorMessage = err.response?.data?.error || 'Database connection error';
           setErrors(prev => ({ ...prev, email: errorMessage }));
           toast.error(errorMessage, {
             position: "top-center",

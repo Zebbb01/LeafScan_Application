@@ -55,7 +55,7 @@ const Scan = () => {
     const interval = setInterval(() => {
       fetchScanCounts();
       fetchDiseaseCounts();
-    }, 1000); // Refresh every 10 seconds
+    }, 5000); // Refresh every 5 seconds
 
     return () => clearInterval(interval); // Cleanup interval on unmount
   }, []);
@@ -256,7 +256,7 @@ const Scan = () => {
           </div>
           <div className={`info-container ${scanned ? 'show' : ''}`}>
             <p><strong>Disease:</strong> {disease || 'N/A'}</p>
-            <p><strong>Confidence:</strong> {confidence ? `${confidence}%` : 'N/A'}</p>
+            <p><strong>Accuracy:</strong> {confidence ? `${confidence}%` : 'N/A'}</p>
           </div>
           <div className="button-group">
             <button className="cancel-button" onClick={handleCancel} disabled={loading}>

@@ -3,11 +3,10 @@ import os
 import numpy as np
 from tensorflow.keras.models import load_model # type: ignore
 from tensorflow.keras.applications.resnet import preprocess_input # type: ignore
-from sklearn.metrics import precision_score, recall_score, f1_score
 from PIL import Image
 from statsmodels.tsa.holtwinters import ExponentialSmoothing
 from sklearn.metrics import mean_absolute_error
-from sklearn.model_selection import KFold, TimeSeriesSplit # mao ni ang gi gamit sa pag K-fold cross validation
+from sklearn.model_selection import KFold # mao ni ang gi gamit sa pag K-fold cross validation
 import pandas as pd
 from werkzeug.utils import secure_filename
 from models import User, db, ScanRecord, Production
@@ -22,14 +21,14 @@ logging.basicConfig(level=logging.DEBUG)
 
 def init_ml_routes(app):
     # Load your trained model
-    model_path = os.path.abspath("saved_models/CacaoScanner_v1.h5")
+    model_path = os.path.abspath("saved_models/scanner8classV3.h5")
     if not os.path.exists(model_path):
         raise ValueError(f"File not found: filepath={model_path}. Please ensure the file exists.")
     
     model = load_model(model_path, compile=False)
     model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
 
-    CLASS_NAMES = ["Branch Dieback", "Branch Healthy", "Invalid Image", "Cacao Early Blight", "Cacao Healthy", "Cacao Late Blight", "Cacao Leaf Spot"]
+    CLASS_NAMES = ["Branch Dieback", "Branch Healthy", "Invalid Leaf", "Invalid Image", "Cacao Early Blight", "Cacao Healthy", "Cacao Late Blight", "Cacao Leaf Spot"]
 
     @app.route("/api/get_scan_counts", methods=["GET"])
     def get_scan_counts():
@@ -72,7 +71,7 @@ def init_ml_routes(app):
             # Query all records excluding healthy classifications
             diseases = (
                 db.session.query(ScanRecord.disease, db.func.count(ScanRecord.disease))
-                .filter(~ScanRecord.disease.in_(["Branch Healthy", "Cacao Healthy", "Invalid Image"]))
+                .filter(~ScanRecord.disease.in_(["Branch Healthy", "Cacao Healthy", "Invalid Leaf", "Invalid Image"]))
                 .group_by(ScanRecord.disease)
                 .all()
             )
@@ -132,15 +131,8 @@ def init_ml_routes(app):
                 predicted_class = CLASS_NAMES[predicted_class_index]
                 confidence = predictions[0][predicted_class_index]
 
-                # Ground truth labels (placeholder logic for single prediction)
-                true_labels = [predicted_class_index]
-                predicted_labels = [predicted_class_index]
 
-                # Compute metrics
-                accuracy = 1.0  # 100% accuracy for a single prediction
-                precision = precision_score(true_labels, predicted_labels, average='weighted', zero_division=0)
-                recall = recall_score(true_labels, predicted_labels, average='weighted', zero_division=0)
-                f1 = f1_score(true_labels, predicted_labels, average='weighted', zero_division=0)
+
             except Exception as e:
                 return jsonify({"error": f"Error during prediction: {str(e)}"}), 500
 
@@ -157,6 +149,12 @@ def init_ml_routes(app):
                     "cause": "Healthy branches with no disease or infection.",
                     "contributing_factors": "Proper care, watering, and pruning.",
                     "more_info_url": "https://www.webmd.com/diet/health-benefits-cacao-powder"
+                },
+                 "Invalid Leaf": {
+                    "prevention": "N/A",
+                    "cause": "N/A",
+                    "contributing_factors": "N/A",
+                    "more_info_url": " "
                 },
                 "Invalid Image": {
                     "prevention": "N/A",
@@ -234,12 +232,6 @@ def init_ml_routes(app):
                 "cause": disease_info["cause"],
                 "contributing_factors": disease_info["contributing_factors"],
                 "more_info_url": disease_info["more_info_url"],
-                "metrics": {
-                    "accuracy": accuracy,
-                    "precision": precision,
-                    "recall": recall,
-                    "f1_score": f1
-                },
                 "scan_counts": {
                     "scans_today": scans_today,
                     "scanned_today": user.scanned_today if user else 0

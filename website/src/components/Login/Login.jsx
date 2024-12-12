@@ -57,7 +57,7 @@ const Login = ({ setUser }) => {
           }
         }).catch(err => {
           setLoading(false);
-          const errorMessage = err.response?.data?.error || 'Invalid credentials';
+          const errorMessage = err.response?.data?.error || 'Database connection error';
           toast.error(errorMessage, {
             position: "top-center",
             autoClose: 2000,

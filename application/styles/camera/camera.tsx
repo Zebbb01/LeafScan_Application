@@ -157,6 +157,22 @@ const styles = StyleSheet.create({
     shadowRadius: 10,
     elevation: 5,
   },
+  flashButton: {
+    backgroundColor: 'rgba(0,0,0,0.6)',
+    borderRadius: 50,
+    padding: 12,
+    marginBottom: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.4,
+    shadowRadius: 8,
+    elevation: 5,
+    alignItems: 'center',
+    justifyContent: 'center',
+    position: 'absolute', // Positioned within the camera view
+    top: 20, // Adjust based on camera view
+    right: 20, // Align to the right side
+  },
 });
 
 export default styles;

@@ -217,7 +217,7 @@ export default function ScannerScreen() {
                       <Text style={styles.modalText}>{scanResult.disease}</Text>
                     </View>
                     <View style={styles.column}>
-                      <Text style={styles.modalLabel}>Confidence:</Text>
+                      <Text style={styles.modalLabel}>Accuracy:</Text>
                       <Text style={styles.modalText}>
                         {(scanResult.confidence * 1).toFixed(2)}%
                       </Text>
