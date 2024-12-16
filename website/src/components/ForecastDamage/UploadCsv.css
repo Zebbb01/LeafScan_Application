@@ -96,3 +96,65 @@ input[type="file"] {
 .remove-file-btn:hover {
   background-color: #e44d4d;
 }
+
+.severity-selector {
+  margin-top: 15px;
+  width: 100%;
+  max-width: 250px;
+  padding: 10px;
+  background-color: #f4f7f9;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.slider-group {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.slider-group label {
+  font-size: 16px;
+  color: #333;
+  flex: 1;
+}
+
+.slider-group input[type="range"] {
+  flex: 4;
+  cursor: pointer;
+  appearance: none;
+  width: 100%;
+  height: 10px;
+  border-radius: 10px;
+  background: linear-gradient(to right, #d5f1a3, #f59e42, #d94f46);
+  outline: none;
+  transition: background 0.3s ease;
+}
+
+.slider-group input[type="range"]:hover {
+  background: linear-gradient(to right, #b4e08c, #e57d2e, #d94f46);
+}
+
+.slider-group input[type="range"]:focus {
+  background: linear-gradient(to right, #7cc88f, #f79c42, #cc4035);
+}
+
+.slider-group span {
+  font-size: 14px;
+  color: #333;
+  flex: 1;
+  text-align: center;
+}
+
+.severity-label {
+  font-size: 16px;
+  font-weight: bold;
+  color: #333;
+  text-align: center;
+}
+
+.severity-label span {
+  color: #777;
+}

@@ -5,7 +5,15 @@ const UploadCsv = ({ setIsDataLoaded }) => {
     const [file, setFile] = useState(null);
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(false);
+    const [severity, setSeverity] = useState(1); // Single severity value for both min and max
     const fileInputRef = useRef(null);
+
+    const getSeverityLabel = () => {
+        if (severity >= 1 && severity <= 3) return 'Low';
+        if (severity >= 4 && severity <= 6) return 'Moderate';
+        if (severity >= 7 && severity <= 10) return 'Severe';
+        return 'Mixed';
+    };
 
     const handleFileChange = (e) => {
         const selectedFile = e.target.files[0];
@@ -27,7 +35,8 @@ const UploadCsv = ({ setIsDataLoaded }) => {
         setLoading(true);
         const formData = new FormData();
         formData.append('file', file);
-
+        formData.append('severity', severity);  // Pass the severity value directly
+        
         try {
             const response = await fetch('/api/upload_csv', { method: 'POST', body: formData });
             const result = await response.json();
@@ -35,7 +44,7 @@ const UploadCsv = ({ setIsDataLoaded }) => {
                 throw new Error(result.error || 'Unknown upload error');
             }
 
-            setIsDataLoaded(true); // Trigger data reload in ForecastDamage
+            setIsDataLoaded(true); 
         } catch (err) {
             setError(err.message);
         } finally {
@@ -46,11 +55,17 @@ const UploadCsv = ({ setIsDataLoaded }) => {
     const handleRemoveFile = () => {
         setFile(null);
         fileInputRef.current.value = '';
-        setIsDataLoaded(false); // Set to false when file is removed to reload data
+        setIsDataLoaded(false);
+    };
+
+    const handleSeverityChange = (e) => {
+        const newSeverity = parseInt(e.target.value, 10);
+        setSeverity(newSeverity); // Update severity for both min and max
     };
 
     return (
         <div className="upload-csv-container">
+            {/* Hidden file input */}
             <input 
                 type="file" 
                 id="file-upload" 
@@ -58,15 +73,38 @@ const UploadCsv = ({ setIsDataLoaded }) => {
                 hidden 
                 ref={fileInputRef} 
             />
-            <label htmlFor="file-upload" className="upload-csv-label">
-                {file ? `Selected File: ${file.name}` : 'Choose a CSV file'}
-            </label>
+            {!file && (
+                <label htmlFor="file-upload" className="upload-csv-label">
+                    Choose a CSV file
+                </label>
+            )}
+
             {file && (
                 <div className="file-preview">
                     <span className="file-name">{file.name}</span>
+                    {/* Hide the file input and show the remove button */}
                     <button onClick={handleRemoveFile} className="remove-file-btn">Remove</button>
                 </div>
             )}
+            
+            <div className="severity-selector">
+                <label htmlFor="severity">VSD Disease Severity:</label>
+                <div className="slider-group">
+                    <label>Severity:</label>
+                    <input
+                        type="range"
+                        min="1"
+                        max="10"
+                        value={severity}
+                        onChange={handleSeverityChange}
+                    />
+                    <span>{severity}%</span>
+                </div>
+                <div className="severity-label">
+                    <strong>Severity Level:</strong> {getSeverityLabel()}
+                </div>
+            </div>
+
             <button 
                 className={`upload-csv-btn ${loading ? 'loading' : ''}`} 
                 onClick={handleFileUpload}

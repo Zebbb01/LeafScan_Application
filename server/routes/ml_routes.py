@@ -21,14 +21,14 @@ logging.basicConfig(level=logging.DEBUG)
 
 def init_ml_routes(app):
     # Load your trained model
-    model_path = os.path.abspath("saved_models/scanner8classV3.h5")
+    model_path = os.path.abspath("saved_models/CacaoScanner_best_v1.h5")
     if not os.path.exists(model_path):
         raise ValueError(f"File not found: filepath={model_path}. Please ensure the file exists.")
     
     model = load_model(model_path, compile=False)
     model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
 
-    CLASS_NAMES = ["Branch Dieback", "Branch Healthy", "Invalid Leaf", "Invalid Image", "Cacao Early Blight", "Cacao Healthy", "Cacao Late Blight", "Cacao Leaf Spot"]
+    CLASS_NAMES = ["Vascular Streak Dieback (VSD)", "Branch Healthy", "Invalid Image", "Cacao Early Blight", "Cacao Healthy", "Cacao Late Blight", "Cacao Leaf Spot"]
 
     @app.route("/api/get_scan_counts", methods=["GET"])
     def get_scan_counts():
@@ -71,7 +71,7 @@ def init_ml_routes(app):
             # Query all records excluding healthy classifications
             diseases = (
                 db.session.query(ScanRecord.disease, db.func.count(ScanRecord.disease))
-                .filter(~ScanRecord.disease.in_(["Branch Healthy", "Cacao Healthy", "Invalid Leaf", "Invalid Image"]))
+                .filter(~ScanRecord.disease.in_(["Branch Healthy", "Cacao Healthy", "Invalid Image"]))
                 .group_by(ScanRecord.disease)
                 .all()
             )
@@ -138,7 +138,7 @@ def init_ml_routes(app):
 
             # Map the prediction to a class and get prevention/control info
             disease_mapping = {
-                "Branch Dieback": {
+                "Vascular Streak Dieback (VSD)": {
                     "prevention": "Implement regular pruning practices to remove infected or dead branches, which helps reduce sources of infection. Disinfect pruning tools before and after each use to prevent spreading the fungus. Apply fungicide sprays, particularly during the rainy season or in humid conditions, as a preventive measure. Ensure proper soil nutrition through regular fertilization, which strengthens plant resistance against pathogens. Additionally, manage shade to improve air circulation around branches and reduce humidity levels.",
                     "cause": "Caused by fungal pathogens such as *Phytophthora* species or *Moniliophthora roreri*.",
                     "contributing_factors": "Poor pruning practices, mechanical damage, environmental stress (e.g., drought), and poor soil nutrition can weaken branches, making them more susceptible to infections. High humidity and wet conditions can also exacerbate the spread of these pathogens.",
@@ -149,12 +149,6 @@ def init_ml_routes(app):
                     "cause": "Healthy branches with no disease or infection.",
                     "contributing_factors": "Proper care, watering, and pruning.",
                     "more_info_url": "https://www.webmd.com/diet/health-benefits-cacao-powder"
-                },
-                 "Invalid Leaf": {
-                    "prevention": "N/A",
-                    "cause": "N/A",
-                    "contributing_factors": "N/A",
-                    "more_info_url": " "
                 },
                 "Invalid Image": {
                     "prevention": "N/A",
@@ -170,7 +164,7 @@ def init_ml_routes(app):
                 },
                 "Cacao Healthy": {
                     "prevention": "Maintain good farm hygiene practices and regularly monitor for pests and diseases.",
-                    "cause": "No disease present, healthy plant.",
+                    "cause": "No cause present, healthy plant.",
                     "contributing_factors": "Proper care, pest control, and monitoring.",
                     "more_info_url": "https://www.webmd.com/diet/health-benefits-cacao-powder"
                 },
@@ -184,7 +178,7 @@ def init_ml_routes(app):
                     "prevention": "Avoid overcrowding of plants by maintaining optimal spacing to allow for good air circulation. Prune regularly to prevent excessive foliage, which can trap moisture and create a favorable environment for fungal growth. Apply protective fungicidal sprays before the rainy season or when conditions are humid. Remove any affected leaves or plant debris from the field to limit sources of infection. Consider intercropping with non-host plants to improve biodiversity and resilience against fungal diseases.",
                     "cause": "Fungal pathogens like *Pseudocercospora* species.",
                     "contributing_factors": "High humidity, poor air circulation, and excessive rainfall create ideal conditions for fungal growth. Overcrowded plantations or improper pruning can also facilitate disease spread.",
-                    "more_info_url": "https://plantvillage.psu.edu/topics/cocoa-cacao/infos"
+                    "more_info_url": "https://www.missouribotanicalgarden.org/gardens-gardening/your-garden/help-for-the-home-gardener/advice-tips-resources/insects-pests-and-problems/diseases/fungal-spots/leaf-spot-shade#:~:text=Leaf%20spot%20is%20a%20common,like%20a%20leaf%20spot%20disease."
                 }
             }
 
@@ -252,6 +246,20 @@ def init_ml_routes(app):
         if file.filename == '':
             return jsonify({'error': 'No selected file'}), 400
 
+        severity = request.form.get('severity')
+
+        if severity:
+            try:
+                # Parse the severity value directly as an integer
+                severity_value = int(severity)
+            except ValueError:
+                return jsonify({'error': 'Invalid severity value. It should be an integer.'}), 400
+
+            # Store the severity value for forecasting logic or pass it downstream
+            session['severity'] = severity_value
+        else:
+            return jsonify({'error': 'Severity value is required.'}), 400
+
         if file and file.filename.endswith('.csv'):
             try:
                 # Read the uploaded CSV file into a pandas DataFrame
@@ -294,12 +302,14 @@ def init_ml_routes(app):
             return jsonify({'error': 'Invalid file format. Please upload a CSV file.'}), 400
 
 
+
+
     @app.route('/api/production-raw', methods=['GET'])
     def production_raw():
         try:
             # Fetch production data from the database
             production_data = fetch_production_data()
-            
+
             # Return the data as JSON
             return jsonify({'production': production_data.to_dict(orient='records')}), 200
         except Exception as e:
@@ -320,35 +330,18 @@ def init_ml_routes(app):
             app.logger.error(f"Error fetching production data: {e}")
             raise
 
-    def fetch_disease_data():
-        """Fetch disease data and categorize leaf and branch diseases."""
-        try:
-            leaf_diseases = ["Cacao Early Blight", "Cacao Late Blight", "Cacao Leaf Spot"]
-            branch_diseases = ["Branch Dieback"]
-
-            # Fetch all non-healthy disease records from the ScanRecord table
-            records = ScanRecord.query.filter(ScanRecord.disease != 'Healthy').all()
-
-            # Initialize counters for leaf and branch diseases
-            leaf_disease_count = sum(1 for record in records if record.disease in leaf_diseases)
-            branch_disease_count = sum(1 for record in records if record.disease in branch_diseases)
-
-            return {'leaf_diseases': leaf_disease_count, 'branch_diseases': branch_disease_count}
-        except Exception as e:
-            app.logger.error(f"Error fetching disease data: {e}")
-            raise
     def time_series_k_fold(data, k=5, seasonal_periods=4):
         # Initialize KFold (here k=5 for example)
         kf = KFold(n_splits=k, shuffle=False)
-        
+
         mae_scores = []
         mse_scores = []
         rmse_scores = []
-        
+
         for train_index, test_index in kf.split(data):
             # Split the data into train and test
             train_data, test_data = data.iloc[train_index], data.iloc[test_index]
-            
+
             # Fit the model on training data
             model = ExponentialSmoothing(
                 train_data['value'], 
@@ -356,21 +349,21 @@ def init_ml_routes(app):
                 seasonal='add', 
                 seasonal_periods=seasonal_periods
             ).fit()
-            
+
             # Forecast on the test data
             forecast = model.forecast(len(test_data))
-            
+
             # Evaluate the model
             y_true = test_data['value'].values
             y_pred = forecast.values
             mae = mean_absolute_error(y_true, y_pred)
             mse = mean_squared_error(y_true, y_pred)
             rmse = np.sqrt(mse)
-            
+
             mae_scores.append(mae)
             mse_scores.append(mse)
             rmse_scores.append(rmse)
-        
+
         # Return average scores from all folds
         return {
             'MAE': np.mean(mae_scores),
@@ -384,29 +377,25 @@ def init_ml_routes(app):
             production_data = fetch_production_data()
             production_data['date'] = pd.to_datetime(production_data['date'])
             production_data.set_index('date', inplace=True)
-            
-            # Fetch disease data
-            disease_data = fetch_disease_data()
-            leaf_disease_count = disease_data['leaf_diseases']
-            branch_disease_count = disease_data['branch_diseases']
 
-            # Calculate percentage losses
-            leaf_disease_loss = (leaf_disease_count // 10) * 0.03 if leaf_disease_count >= 10 else 0
-            branch_disease_loss = (branch_disease_count // 10) * 0.1 if branch_disease_count >= 10 else 0
-            total_loss_percentage = leaf_disease_loss + branch_disease_loss
+            # Fetch the severity value from the session
+            severity_value = session.get('severity', 1)  # Default to severity of 1 if not set
+
+            # Calculate the loss percentage based on the severity value (scaled from 1 to 10)
+            total_loss_percentage = severity_value / 100  # Severity of 1 -> 1%, Severity of 10 -> 10%
 
             # Perform k-fold cross-validation
-            cv_metrics = time_series_k_fold(production_data, k=10)  # k=5 folds for example
+            cv_metrics = time_series_k_fold(production_data, k=10)
 
             # Train the model and forecast the first quarter
             model = ExponentialSmoothing(
-                production_data['value'], 
-                trend='add', 
-                seasonal='add', 
+                production_data['value'],
+                trend='add',
+                seasonal='add',
                 seasonal_periods=4
             ).fit()
             first_quarter_forecast = model.forecast(1)
-            
+
             # Calculate actual losses for the first quarter
             actual_loss_first_quarter = first_quarter_forecast[0] * total_loss_percentage if total_loss_percentage > 0 else 0
             adjusted_first_quarter = first_quarter_forecast[0] - actual_loss_first_quarter
@@ -418,13 +407,13 @@ def init_ml_routes(app):
 
             # Re-train the model on the updated data and forecast the remaining 7 quarters
             model = ExponentialSmoothing(
-                updated_data['value'], 
-                trend='add', 
-                seasonal='add', 
+                updated_data['value'],
+                trend='add',
+                seasonal='add',
                 seasonal_periods=4
             ).fit()
             remaining_forecast = model.forecast(7)
-            
+
             # Calculate actual losses and adjusted values for the remaining quarters
             actual_losses = [
                 value * total_loss_percentage if total_loss_percentage > 0 else 0
@@ -443,19 +432,70 @@ def init_ml_routes(app):
                 'forecast_dates': [date.strftime('%Y-%m-%d') for date in forecast_dates],
                 'next_8_quarters_forecast': [first_quarter_forecast[0]] + remaining_forecast.tolist(),
                 'adjusted_production': combined_forecast,
-                'actual_losses': actual_losses,  # Absolute losses in production values
+                'actual_losses': actual_losses,
                 'evaluation_metrics': cv_metrics,
-                'leaf_disease_loss': leaf_disease_loss,
-                'branch_disease_loss': branch_disease_loss,
-                'leaf_disease_count': leaf_disease_count,
-                'branch_disease_count': branch_disease_count
+                'severity_range': [f"{severity_value * 1}%"]  # Show severity as a percentage
             }
             return jsonify(response)
 
         except Exception as e:
             app.logger.error(f"Error during forecasting: {e}")
             return jsonify({'error': str(e)}), 500
-        
+
+    @app.route('/api/bar-forecast-losses', methods=['GET']) 
+    def bar_forecast_losses():
+        try:
+            production_data = fetch_production_data()
+            production_data['date'] = pd.to_datetime(production_data['date'])
+            production_data.set_index('date', inplace=True)
+
+            severity_value = session.get('severity', 1)  # Default to severity of 1 if not set
+            total_loss_percentage = severity_value / 100
+
+            model = ExponentialSmoothing(
+                production_data['value'],
+                trend='add',
+                seasonal='add',
+                seasonal_periods=4
+            ).fit()
+            first_quarter_forecast = model.forecast(1)
+
+            actual_loss_first_quarter = first_quarter_forecast[0] * total_loss_percentage
+            adjusted_first_quarter = first_quarter_forecast[0] - actual_loss_first_quarter
+
+            last_date = production_data.index[-1]
+            updated_data = production_data.copy()
+            updated_data.loc[last_date + pd.DateOffset(months=3)] = adjusted_first_quarter
+
+            model = ExponentialSmoothing(
+                updated_data['value'],
+                trend='add',
+                seasonal='add',
+                seasonal_periods=4
+            ).fit()
+            remaining_forecast = model.forecast(7)
+
+            actual_losses = [value * total_loss_percentage for value in remaining_forecast]
+            adjusted_remaining_forecast = [
+                value - loss for value, loss in zip(remaining_forecast, actual_losses)
+            ]
+
+            forecast_dates = [last_date + pd.DateOffset(months=3 * i) for i in range(1, 9)]
+            combined_forecast = [adjusted_first_quarter] + adjusted_remaining_forecast
+            actual_losses = [actual_loss_first_quarter] + actual_losses
+
+            response = {
+                'forecast_dates': [date.strftime('%Y-%m-%d') for date in forecast_dates],
+                'expected_production': [first_quarter_forecast[0]] + remaining_forecast.tolist(),
+                'adjusted_production': combined_forecast,
+                'loss_production_impact': actual_losses,
+            }
+            return jsonify(response)
+        except Exception as e:
+            app.logger.error(f"Error during forecasting: {e}")
+            return jsonify({'error': str(e)}), 500
+
+    
     @app.route('/api/production-losses', methods=['GET'])
     def production_losses():
         try:
@@ -465,33 +505,94 @@ def init_ml_routes(app):
             if production_data.empty:
                 return jsonify({'error': 'No production data available. Please upload data first.'}), 400
 
-            # Fetch disease data
-            disease_data = fetch_disease_data()
-            leaf_disease_count = disease_data['leaf_diseases']
-            branch_disease_count = disease_data['branch_diseases']
+            # Fetch the severity from the session
+            severity_value = session.get('severity', 1)  # Default severity to 1 if not set
 
-            # Calculate loss percentages
-            leaf_disease_loss = (leaf_disease_count // 10) * 0.03 if leaf_disease_count >= 10 else 0
-            branch_disease_loss = (branch_disease_count // 10) * 0.1 if branch_disease_count >= 10 else 0
-            total_loss_percentage = leaf_disease_loss + branch_disease_loss
+            # Adjust loss percentage calculation based on severity
+            loss_percentage = severity_value / 100  # Map severity to a percentage (1 -> 1%, 2 -> 2%, etc.)
 
-            # Apply losses to production data
-            production_data['adjusted_production'] = production_data['value'] * (1 - total_loss_percentage)
+            # Apply losses to production data based on the calculated percentage
+            production_data['adjusted_production'] = production_data['value'] * (1 - loss_percentage)
 
             # Prepare response data
             response = {
                 'dates': production_data['date'].tolist(),
                 'production_raw': production_data['value'].tolist(),
                 'adjusted_production': production_data['adjusted_production'].round(2).tolist(),
-                'loss_percentage': round(total_loss_percentage * 100, 2),
-                'leaf_disease_count': leaf_disease_count,
-                'branch_disease_count': branch_disease_count
+                'loss_percentage': round(loss_percentage * 100, 2)
             }
 
             return jsonify(response), 200
         except Exception as e:
             app.logger.error(f"Error calculating production losses: {e}")
             return jsonify({'error': str(e)}), 500
+                
+    @app.route('/api/bargraph-losses', methods=['GET'])
+    def bargraph_losses():
+        try:
+            # Fetch production data
+            production_data = fetch_production_data()
+
+            if production_data.empty:
+                return jsonify({'error': 'No production data available. Please upload data first.'}), 400
+
+            production_data['date'] = pd.to_datetime(production_data['date'])
+            production_data.set_index('date', inplace=True)
+
+            # Define cutoff date for checking future data
+            future_start_date = pd.to_datetime('2024-01-01')
+
+            # Check if data contains any future dates
+            if production_data.index.max() <= future_start_date:
+                return jsonify({'error': 'No future data available for forecasting.'}), 400
+
+            # Define the cutoff date for historical data: up to 2024Q1
+            cutoff_date = pd.to_datetime('2024-03-31')
+            historical_data = production_data.loc[:cutoff_date]
+
+            if historical_data.empty:
+                return jsonify({'error': 'No historical data available for forecasting.'}), 400
+
+            # Fit the model on historical data
+            model = ExponentialSmoothing(
+                historical_data['value'],
+                trend='add',
+                seasonal='add',
+                seasonal_periods=4
+            ).fit()
+
+            # Generate forecast
+            forecast_start_date = pd.to_datetime('2024-04-01')
+            forecast_end_date = forecast_start_date + pd.DateOffset(years=2)
+            forecast_index = pd.date_range(start=forecast_start_date, end=forecast_end_date, freq='Q')
+            forecast_values = model.forecast(len(forecast_index))
+
+            if len(forecast_values) == 0:
+                return jsonify({'error': 'Forecasting failed. No data available for predictions.'}), 400
+
+            # Adjust values based on severity
+            severity_value = session.get('severity', 1)
+            loss_percentage = severity_value / 100
+            adjusted_values = [val * (1 - loss_percentage) for val in forecast_values]
+            actual_losses = [val * loss_percentage for val in forecast_values]
+
+            forecast_dates_formatted = [
+                f"{date.year}Q{(date.month - 1) // 3 + 1}" for date in forecast_index
+            ]
+
+            return jsonify({
+                'dates': forecast_dates_formatted,
+                'expected_production': forecast_values.tolist(),
+                'adjusted_production': adjusted_values,
+                'actual_losses': actual_losses,
+            }), 200
+
+        except Exception as e:
+            app.logger.error(f"Error during forecasting: {e}")
+            return jsonify({'error': str(e)}), 500
+
+
+
 
 
      # ---------------------------------- ExponentialSmoothing Model ------------------------------------ #

@@ -21,6 +21,7 @@ const ForecastDamage = ({ isDataLoaded }) => {
     }
   };
 
+  // Function to convert date to quarterly format
   const convertToQuarterlyFormat = (dateString) => {
     const date = new Date(dateString);
     const year = date.getFullYear();
@@ -29,84 +30,93 @@ const ForecastDamage = ({ isDataLoaded }) => {
     return `${year}Q${quarter}`;
   };
 
+  // Function to get severity level based on severity range
+  const getSeverityLevel = (severityRange) => {
+    const severityValue = parseInt(severityRange); // Convert the severity range (e.g. "5%" -> 5)
+    if (severityValue >= 1 && severityValue <= 3) return 'Low';
+    if (severityValue >= 4 && severityValue <= 6) return 'Moderate';
+    if (severityValue >= 7 && severityValue <= 10) return 'Severe';
+    return 'Mixed';
+  };
+
   // Function to fetch forecast data
-const fetchForecastData = async () => {
-  setLoading(true);
-  setError(null);
+  const fetchForecastData = async () => {
+    setLoading(true);
+    setError(null);
 
-  try {
-    const response = await fetch('/api/forecast-losses');
-    if (!response.ok) throw new Error('Failed to fetch forecast data');
+    try {
+      const response = await fetch('/api/forecast-losses');
+      if (!response.ok) throw new Error('Failed to fetch forecast data');
+      const data = await response.json();
+      setForecastDetails(data);
 
-    const data = await response.json();
-    setForecastDetails(data);
+      // Map the dates and transform production data
+      const forecastLabels = data.forecast_dates.map(convertToQuarterlyFormat);
+      const rawLabels = rawProductionData?.map(item => convertToQuarterlyFormat(item.date)) || [];
 
-    // Transform forecast and raw labels
-    const forecastLabels = data.forecast_dates.map(convertToQuarterlyFormat);
-    const rawLabels = rawProductionData?.map(item => convertToQuarterlyFormat(item.date)) || [];
+      const forecastData = data.next_8_quarters_forecast.map(value => parseFloat(value.toFixed(2)));
+      const lossImpactData = data.actual_losses.map(value => parseFloat(value.toFixed(2)));
+      const adjustedData = data.adjusted_production.map(value => parseFloat(value.toFixed(2)));
 
-    const forecastData = data.next_8_quarters_forecast.map(value => parseFloat(value.toFixed(2)));
-    const lossImpactData = data.actual_losses.map(value => parseFloat(value.toFixed(2)));
-    const adjustedData = data.adjusted_production.map(value => parseFloat(value.toFixed(2)));
+      const rawValues = rawProductionData?.map(item => item.value) || [];
+      const combinedAdjustedProduction = [...rawValues, ...adjustedData];
 
-    const rawValues = rawProductionData?.map(item => item.value) || [];
-    const combinedAdjustedProduction = [...rawValues, ...adjustedData];
+      setChartData({
+        labels: [...rawLabels, ...forecastLabels],
+        datasets: [
+          {
+            label: 'Production Data',
+            data: rawValues,
+            backgroundColor: 'blue',
+            borderColor: 'blue',
+            borderWidth: 2,
+            fill: false,
+            tension: 0.1,
+            pointRadius: 0,
+            pointHoverRadius: 5,
+          },
+          {
+            label: 'Expected Production',
+            data: [...Array(rawValues.length).fill(null), ...forecastData],
+            backgroundColor: 'orange',
+            borderColor: 'orange',
+            borderWidth: 2,
+            fill: false,
+            tension: 0.1,
+            pointRadius: 0,
+            pointHoverRadius: 5,
+          },
+          {
+            label: 'Loss Production Impact',
+            data: [...Array(rawValues.length).fill(null), ...lossImpactData],
+            backgroundColor: 'red',
+            borderColor: 'red',
+            borderWidth: 2,
+            fill: false,
+            tension: 0.1,
+            pointRadius: 0,
+            pointHoverRadius: 5,
+          },
+          {
+            label: 'Adjusted Production',
+            data: combinedAdjustedProduction,
+            backgroundColor: 'green',
+            borderColor: 'green',
+            borderWidth: 2,
+            fill: false,
+            tension: 0.1,
+            pointRadius: 0,
+            pointHoverRadius: 5,
+          },
+        ],
+      });
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    setChartData({
-      labels: [...rawLabels, ...forecastLabels],
-      datasets: [
-        {
-          label: 'Production Data',
-          data: rawValues,
-          backgroundColor: 'blue',
-          borderColor: 'blue',
-          borderWidth: 2,
-          fill: false,
-          tension: 0.1,
-          pointRadius: 0,
-          pointHoverRadius: 5,
-        },
-        {
-          label: 'Expected Production',
-          data: [...Array(rawValues.length).fill(null), ...forecastData],
-          backgroundColor: 'orange',
-          borderColor: 'orange',
-          borderWidth: 2,
-          fill: false,
-          tension: 0.1,
-          pointRadius: 0,
-          pointHoverRadius: 5,
-        },
-        {
-          label: 'Loss Production Impact',
-          data: [...Array(rawValues.length).fill(null), ...lossImpactData],
-          backgroundColor: 'red',
-          borderColor: 'red',
-          borderWidth: 2,
-          fill: false,
-          tension: 0.1,
-          pointRadius: 0,
-          pointHoverRadius: 5,
-        },
-        {
-          label: 'Adjusted Production',
-          data: combinedAdjustedProduction,
-          backgroundColor: 'green',
-          borderColor: 'green',
-          borderWidth: 2,
-          fill: false,
-          tension: 0.1,
-          pointRadius: 0,
-          pointHoverRadius: 5,
-        },
-      ],
-    });
-  } catch (err) {
-    setError(err.message);
-  } finally {
-    setLoading(false);
-  }
-};
   // Refresh data when isDataLoaded changes
   useEffect(() => {
     if (isDataLoaded) {
@@ -120,22 +130,9 @@ const fetchForecastData = async () => {
     }
   }, [rawProductionData]);
 
-  // // Set interval to refresh data every 20 seconds
-  // useEffect(() => {
-  //   const interval = setInterval(() => {
-  //     fetchRawData();
-  //     fetchForecastData();
-  //   }, 20000);
-
-  //   return () => clearInterval(interval);
-  // }, []);
-
   if (loading) return <div>Loading...</div>;
   if (error) return <div className="forecast-error">Error: {error}</div>;
 
-  const leafDiseaseLoss = forecastDetails ? forecastDetails.leaf_disease_loss * 100 : 0;
-  const branchDiseaseLoss = forecastDetails ? forecastDetails.branch_disease_loss * 100 : 0;
-  const totalDiseaseLoss = leafDiseaseLoss + branchDiseaseLoss;
   const evaluationMetrics = forecastDetails ? forecastDetails.evaluation_metrics : null;
 
   const options = {
@@ -143,9 +140,9 @@ const fetchForecastData = async () => {
     plugins: {
       title: {
         display: true,
-        text: 'Impact of Disease on Cacao Production: Forecasted Damage',
+        text: 'Impact of Vascular Streak Dieback (VSD) Disease on Cacao Production: Forecasted Damage',
         font: {
-          size: 16,
+          size: 14,
         }
       },
       legend: { display: true, position: 'top' },
@@ -200,15 +197,13 @@ const fetchForecastData = async () => {
       )}
       {forecastDetails && (
         <div className="forecast-details">
-          <p><strong>Leaf Disease Loss:</strong> {(forecastDetails.leaf_disease_loss * 100).toFixed(2)}%</p>
-          <p><strong>Branch Disease Loss:</strong> {(forecastDetails.branch_disease_loss * 100).toFixed(2)}%</p>
-          <p><strong>Total Disease Loss:</strong> {(totalDiseaseLoss).toFixed(2)}%</p>
+          <p><strong>VSD Disease Loss:</strong> {forecastDetails.severity_range[0]}</p>
+          <p><strong>Severity Level:</strong> {getSeverityLevel(forecastDetails.severity_range[0])}</p>
         </div>
       )}
 
       <Line data={chartData} options={options} />
 
-      {/* Refresh Button */}
       <div className="refresh-button-container">
         <button className="refresh-button" onClick={handleRefresh}>Refresh Data</button>
       </div>

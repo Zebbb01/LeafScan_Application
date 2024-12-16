@@ -92,7 +92,7 @@ const Navbar = ({ user, onLogout }) => {
             <li><ScrollLink to='hero' smooth={true} offset={0} duration={500}>Home</ScrollLink></li>
             <li><ScrollLink to='scan-container' smooth={true} offset={-180} duration={500}>Scan</ScrollLink></li>
             <li><ScrollLink to='forecast-chart-container' smooth={true} offset={-180} duration={500}>Forecast</ScrollLink></li>
-            <li><ScrollLink to='forecast-damage-chart-container' smooth={true} offset={-500} duration={500}>Damage Forecast</ScrollLink></li>
+            <li><ScrollLink to='upload-csv-container' smooth={true} offset={-200} duration={500}>Damage Forecast</ScrollLink></li>
             <li><ScrollLink to='about' smooth={true} offset={-260} duration={500}>About</ScrollLink></li>
             <li><ScrollLink to='contact' smooth={true} offset={-260} duration={500}>Contact</ScrollLink></li>
           </>

@@ -39,3 +39,5 @@ frontend/dist/
 **/coverage/
 *.tmp
 *.temp
+
+server/uploads/

@@ -21,6 +21,8 @@ const Scan = () => {
   const [totalDiseasesDetected, setTotalDiseasesDetected] = useState(0);
   const [showDiseaseList, setShowDiseaseList] = useState(false);
   const [currentTime, setCurrentTime] = useState(new Date()); // State for real-time clock
+  const [showErrorModal, setShowErrorModal] = useState(false); // State for the error modal
+  const [errorMessage, setErrorMessage] = useState(""); // State for the error message
 
   // Fetch the scan counts from the server
   const fetchScanCounts = async () => {
@@ -81,7 +83,9 @@ const Scan = () => {
 
   const handleImageUpload = (event) => {
     const file = event.target.files[0];
-    if (file) {
+    
+    // Check if the file is an image
+    if (file && (file.type === 'image/jpeg' || file.type === 'image/png' || file.type === 'image/jpg')) {
       const reader = new FileReader();
       reader.onloadend = () => {
         setImage(reader.result);
@@ -94,9 +98,16 @@ const Scan = () => {
         setScanned(false);
       };
       reader.readAsDataURL(file);
+    } else {
+      // If the file is not an image, show a custom error modal
+      setErrorMessage('Please upload a valid image file (JPEG, JPG, or PNG).');
+      setShowErrorModal(true);
     }
   };
 
+  const handleCloseErrorModal = () => {
+    setShowErrorModal(false);
+  };
 
   const handleScan = async () => {
     if (!image) return;
@@ -161,125 +172,137 @@ const Scan = () => {
     }
   };
 
-  return ( 
-  <>
-    <div className="scan-container">
-      {loading && <Spinner />}
-      {showCancelConfirm && (
-        <>
-          <div className={`overlay ${showCancelConfirm ? 'show' : ''}`} onClick={() => setShowCancelConfirm(false)}></div>
-          <div className="confirmation-dialog">
-            <p>Are you sure you want to cancel?</p>
-            <button onClick={confirmCancel}>Yes</button>
-            <button onClick={() => setShowCancelConfirm(false)} className="no-button">No</button>
-          </div>
-        </>
-      )}
-
-      <div className="scan-header">
-        <div className="scan-info-box-dropdown" onClick={() => setShowDiseaseList(!showDiseaseList)}>
-          <div className="scan-title">
-            <h2>Total Diseases</h2>
-            <p><strong>{totalDiseasesDetected}</strong></p>
-            <div className="dropdown-icon-graph">
-              {showDiseaseList ? <FaChevronRight /> : <FaChevronLeft />}
+  return (
+    <>
+      <div className="scan-container">
+        {loading && <Spinner />}
+        
+        {/* Error Modal */}
+        {showErrorModal && (
+          <div className="error-modal">
+            <div className="error-modal-content">
+              <h2>Error</h2>
+              <p>{errorMessage}</p>
+              <button onClick={handleCloseErrorModal}>Close</button>
             </div>
-          </div>
-        </div>
-        {showDiseaseList && (
-          <div className="dropdown-list">
-            {Object.keys(diseaseCounts).length > 0 ? (
-              <ul>
-                {Object.entries(diseaseCounts).map(([disease, count]) => (
-                  <li key={disease}>
-                    <span className="disease-name">{disease}</span>: <span className="disease-count">{count}</span>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <div className="no-data-text">No data available yet.</div>
-            )}
           </div>
         )}
 
-        <div className="scan-info-box">
-          <div className="scan-title">
-            <h2>Total Scans</h2>
-            <p><strong>{totalScans}</strong></p>
+        {showCancelConfirm && (
+          <>
+            <div className={`overlay ${showCancelConfirm ? 'show' : ''}`} onClick={() => setShowCancelConfirm(false)}></div>
+            <div className="confirmation-dialog">
+              <p>Are you sure you want to cancel?</p>
+              <button onClick={confirmCancel}>Yes</button>
+              <button onClick={() => setShowCancelConfirm(false)} className="no-button">No</button>
+            </div>
+          </>
+        )}
+
+        <div className="scan-header">
+          <div className="scan-info-box-dropdown" onClick={() => setShowDiseaseList(!showDiseaseList)}>
+            <div className="scan-title">
+              <h2>Total Scan Diseases</h2>
+              <p><strong>{totalDiseasesDetected}</strong></p>
+              <div className="dropdown-icon-graph">
+                {showDiseaseList ? <FaChevronRight /> : <FaChevronLeft />}
+              </div>
+            </div>
           </div>
-        </div>
-        <div className="scan-info-box">
-          <div className="scan-title">
-            <h2>Scans Today</h2>
-            <p><strong>{scansToday}</strong></p>
+          {showDiseaseList && (
+            <div className="dropdown-list">
+              {Object.keys(diseaseCounts).length > 0 ? (
+                <ul>
+                  {Object.entries(diseaseCounts).map(([disease, count]) => (
+                    <li key={disease}>
+                      <span className="disease-name">{disease}</span>: <span className="disease-count"> {count} </span>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <div className="no-data-text">No data available yet.</div>
+              )}
+            </div>
+          )}
+
+          <div className="scan-info-box">
+            <div className="scan-title">
+              <h2>Total Scans</h2>
+              <p><strong>{totalScans}</strong></p>
+            </div>
           </div>
-        </div>
-        <div className="scan-info-box">
-          <div className="scan-title">
-            <h2>Your Scans Total</h2>
-            <p><strong>{userTotalScans}</strong></p>
+          <div className="scan-info-box">
+            <div className="scan-title">
+              <h2>Scan Today</h2>
+              <p><strong>{scansToday}</strong></p>
+            </div>
           </div>
-        </div>
-        <div className="scan-info-box">
-        <div className="scan-title">
+          <div className="scan-info-box">
+            <div className="scan-title">
+              <h2>Your Total Scan</h2>
+              <p><strong>{userTotalScans}</strong></p>
+            </div>
+          </div>
+          <div className="scan-info-box">
+            <div className="scan-title">
               <h2>Current Date/Time</h2>
               <h3>{formattedDate}</h3>
             </div>
+          </div>
         </div>
-      </div>
-     
-      {image ? (
-        <div className="image-preview">
-          <div className="scrollable-prevention-info">
-            <div className="prevention-info">
-              <h3>Cause</h3>
-              <p>{cause || 'No cause information available.'}</p>
-              <h3>Contributing Factors</h3>
-              <p>{contributingFactors || 'No contributing factors information available.'}</p>
-              <h3>Prevention</h3>
-              <p>{prevention || 'No prevention information available.'}</p>
-              {moreInfoUrl && moreInfoUrl.trim() ? (
-                <>
-                  <h4>More Info</h4>
-                  <a onClick={handleMoreInfo} className="more-info-link">Click here for more information</a>
-                </>
-              ) : (
-                <>
-                  <h4>More Info</h4>
-                  <p className="no-info-text">No additional information available.</p>
-                </>
+
+        {image ? (
+          <div className="image-preview">
+            <div className="scrollable-prevention-info">
+              <div className="prevention-info">
+                <h3>Cause</h3>
+                <p>{cause || 'No cause information available.'}</p>
+                <h3>Contributing Factors</h3>
+                <p>{contributingFactors || 'No contributing factors information available.'}</p>
+                <h3>Prevention</h3>
+                <p>{prevention || 'No prevention information available.'}</p>
+                {moreInfoUrl && moreInfoUrl.trim() ? (
+                  <>
+                    <h4>More Info</h4>
+                    <a onClick={handleMoreInfo} className="more-info-link">Click here for more information</a>
+                  </>
+                ) : (
+                  <>
+                    <h4>More Info</h4>
+                    <p className="no-info-text">No additional information available.</p>
+                  </>
+                )}
+              </div>
+            </div>
+            <div className="image-container">
+              <img src={image} alt="Uploaded" className="preview-img" />
+            </div>
+            <div className={`info-container ${scanned ? 'show' : ''}`}>
+              <p><strong>Disease:</strong> {disease || 'N/A'}</p>
+              <p><strong>Accuracy:</strong> {confidence ? `${confidence}%` : 'N/A'}</p>
+            </div>
+            <div className="button-group">
+              <button className="cancel-button" onClick={handleCancel} disabled={loading}>
+                Cancel
+              </button>
+              {!scanned && (
+                <button className="scan-button" onClick={handleScan} disabled={loading}>
+                  Scan
+                </button>
               )}
             </div>
           </div>
-          <div className="image-container">
-            <img src={image} alt="Uploaded" className="preview-img" />
+        ) : (
+          <div className="upload-container">
+            <input type="file" id="fileUpload" onChange={handleImageUpload} hidden />
+            <label htmlFor="fileUpload" className="upload-label">
+              Drag and drop an image or <span className="browse-link">browse</span> to upload.
+            </label>
+            <p className="file-requirements">JPEG, JPG, or PNG up to 40MB</p>
+            <button className="btn" onClick={() => document.getElementById('fileUpload').click()}>Upload Photo</button>
           </div>
-          <div className={`info-container ${scanned ? 'show' : ''}`}>
-            <p><strong>Disease:</strong> {disease || 'N/A'}</p>
-            <p><strong>Accuracy:</strong> {confidence ? `${confidence}%` : 'N/A'}</p>
-          </div>
-          <div className="button-group">
-            <button className="cancel-button" onClick={handleCancel} disabled={loading}>
-              Cancel
-            </button>
-            {!scanned && (
-              <button className="scan-button" onClick={handleScan} disabled={loading}>
-                Scan
-              </button>
-            )}
-          </div>
-        </div>
-      ) : (
-        <div className="upload-container">
-          <input type="file" id="fileUpload" onChange={handleImageUpload} hidden />
-          <label htmlFor="fileUpload" className="upload-label">
-            Drag and drop an image or <span className="browse-link">browse</span> to upload.
-          </label>
-          <p className="file-requirements">JPEG, JPG, or PNG up to 40MB</p>
-          <button className="btn" onClick={() => document.getElementById('fileUpload').click()}>Upload Photo</button>
-        </div>
-      )}
-    </div>
+        )}
+      </div>
     </>
   );
 };

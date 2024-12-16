@@ -37,7 +37,7 @@
 
 /* Scan Information */
 .scan-info-box p {
-  font-size: 15px;
+  font-size: 20px;
   font-weight: 600;
   color: yellowgreen; /* Custom color for the values */
   margin: 5px 0;
@@ -71,6 +71,7 @@
 }
 
 .dropdown-list li {
+  width: 90%;
   padding: 8px 10px;
   border-bottom: 1px solid #eee;
   font-size: 14px;
@@ -93,6 +94,7 @@
   color: yellowgreen;
   font-size: 16px;
   flex-grow: calc(1 - 2 / 3);
+  margin-left: 10px;
 }
 
 /* Dropdown Icon */
@@ -123,7 +125,7 @@
 }
 /* Scan Information */
 .scan-info-box-dropdown p {
-  font-size: 15px;
+  font-size: 20px;
   font-weight: 600;
   color: yellowgreen; /* Custom color for the values */
   margin: 5px 0;
@@ -148,6 +150,49 @@
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+
+.error-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.error-modal-content {
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.error-modal-content h2 {
+  color: #e74c3c;
+}
+
+.error-modal-content p {
+  margin: 10px 0;
+}
+
+.error-modal-content button {
+  background-color: #e74c3c;
+  color: white;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.error-modal-content button:hover {
+  background-color: #c0392b;
 }
 
 
@@ -458,7 +503,7 @@
   .scan-info-box {
     max-width: 100%; /* Make boxes take full width on smaller screens */
     padding: 15px;
-    width: 100%;
+    width: 130%;
   }
 
   .scan-info-box p {
@@ -470,14 +515,17 @@
   .scan-info-box-dropdown {
     max-width: 100%; /* Make boxes take full width on smaller screens */
     padding: 15px;
-    width: 100%;
+    padding-right: 30px;
+    width: 130%;
   }
 
   .scan-info-box-dropdown p {
     font-size: 30px;
+    margin-left: 15px;
   }
 
   .scan-info-box-dropdown h2 {
+    width: 100%;
     font-size: 20px;
     font-weight: 600;
     color: #333;

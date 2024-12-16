@@ -21,7 +21,9 @@ const Forecast = React.lazy(() => import('./components/Forecast/ForecastLine'));
 const BarGraph = React.lazy(() => import('./components/BarGraph/BarGraph'));
 const UploadCsv = React.lazy(() => import('./components/ForecastDamage/UploadCsv'));
 const ForecastDamage = React.lazy(() => import('./components/ForecastDamage/ForecastDamage'));
+const ForecastLossGraph = React.lazy(() => import('./components/ForecastDamage/ForecastLossGraph'));
 const LossGraph = React.lazy(() => import('./components/LossGraph/LossGraph'));
+const PredictLossGraph = React.lazy(() => import('./components/PredictLossGraph/PredictLossGraph'));
 
 const App = () => {
   const [user, setUser] = useState(null);
@@ -94,24 +96,30 @@ const App = () => {
                       <Collections />
                     </Suspense>
                     <Suspense fallback={<Spinner message="Loading Title..." />}>
-                      <Title subTitle='Forecasting' title='Cacao Fruit Production Forecast' />
-                    </Suspense>
-                    <Suspense fallback={<Spinner message="Loading Forecast..." />}>
-                      <Forecast />
-                    </Suspense>
-                    <Suspense fallback={<Spinner message="Loading Title..." />}>
                       <Title subTitle='Damage Forecasting' title='Forecasted Impact on Cacao Fruit Production' />
                     </Suspense>
                     <Suspense fallback={<Spinner message="Loading Forecast Damage..." />}>
                       <UploadCsv setIsDataLoaded={setIsDataLoaded} setLoadingData={setLoadingData} />
                     </Suspense>
                     {isDataLoaded && (
-                      <Suspense fallback={<Spinner message="Loading BarGraph..." />}>
+                      <Suspense fallback={<Spinner message="Loading Forecast Damage..." />}>
                         <ForecastDamage setIsDataLoaded={setIsDataLoaded} isDataLoaded={isDataLoaded} />
                       </Suspense>
                     )}
+                    <Suspense fallback={<Spinner message="Loading ForecastLossGraph..." />}>
+                      {isDataLoaded && <ForecastLossGraph />}
+                    </Suspense>
                     <Suspense fallback={<Spinner message="Loading LossGraph..." />}>
-                      <LossGraph />
+                      {isDataLoaded && <LossGraph />}
+                    </Suspense>
+                    <Suspense fallback={<Spinner message="Loading PredictLossGraph..." />}>
+                      {isDataLoaded && <PredictLossGraph />}
+                    </Suspense>
+                    <Suspense fallback={<Spinner message="Loading Title..." />}>
+                      <Title subTitle='Forecasting' title='Cacao Fruit Production Forecast' />
+                    </Suspense>
+                    <Suspense fallback={<Spinner message="Loading Forecast..." />}>
+                      <Forecast />
                     </Suspense>
                     <Suspense fallback={<Spinner message="Loading BarGraph..." />}>
                       <BarGraph />

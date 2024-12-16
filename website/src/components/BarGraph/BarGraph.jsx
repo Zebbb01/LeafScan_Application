@@ -65,7 +65,7 @@ const BarGraph = () => {
         <div className="bargraph-container">
             <div className="bargraph-description">
                 <h2>Cacao Fruit Production</h2>
-                <p>This graph showcases cacao fruit production over the years, providing a clear visual representation of how production has changed over time. By examining this data, we can observe patterns such as increasing or decreasing yields, which are crucial for assessing the long-term viability of cacao farming.</p>
+                <p>This graph showcases all cacao fruit production per the years, providing a clear visual representation of how production has changed over time. By examining this data, we can observe patterns such as increasing or decreasing yields, which are crucial for assessing the long-term viability of cacao farming.</p>
                 <p>Such insights are essential for farmers, researchers, and stakeholders to understand how production has been affected by various factors over time.</p>
             </div>
             <div className="bargraph-chart">

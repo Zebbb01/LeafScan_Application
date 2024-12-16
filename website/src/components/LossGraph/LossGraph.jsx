@@ -18,22 +18,26 @@ const LossGraph = () => {
     const [chartData, setChartData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [forecastDetails, setForecastDetails] = useState(null);
     const chartRef = useRef(null);
 
     const fetchData = async () => {
-        setLoading(true); // Set loading to true when the refresh button is clicked
+        setLoading(true);
         try {
             const response = await fetch('/api/production-losses');
             const data = await response.json();
             if (!response.ok) throw new Error(data.error || 'Failed to fetch data');
 
-            // Filter and transform dates to use quarterly format
+            const forecastResponse = await fetch('/api/forecast-losses');
+            const forecastData = await forecastResponse.json();
+            setForecastDetails(forecastData);
+
             const filteredData = data.dates.reduce((acc, date, index) => {
                 const year = new Date(date).getFullYear();
                 const quarter = Math.floor(new Date(date).getMonth() / 3) + 1;
-                const formattedDate = `${year}Q${quarter}`;  // Transform to 'YYYYQx'
+                const formattedDate = `${year}Q${quarter}`;
 
-                if (year >= 2025) {
+                if (year > 2024 || (year === 2024 && quarter >= 2)) {
                     acc.dates.push(formattedDate);
                     acc.production_raw.push(data.production_raw[index]);
                     acc.adjusted_production.push(data.adjusted_production[index]);
@@ -41,27 +45,32 @@ const LossGraph = () => {
                 return acc;
             }, { dates: [], production_raw: [], adjusted_production: [] });
 
-            setChartData({
-                labels: filteredData.dates, // Use filtered dates as x-axis labels
-                datasets: [
-                    {
-                        label: 'Production (Raw)',
-                        data: filteredData.production_raw,
-                        backgroundColor: '#5a9',
-                        borderColor: '#4d8',
-                        borderWidth: 1,
-                        barThickness: 'flex',
-                    },
-                    {
-                        label: 'Loss',
-                        data: filteredData.adjusted_production,
-                        backgroundColor: '#e74c3c', 
-                        borderColor: '#d62c1a',
-                        borderWidth: 1,
-                        barThickness: 'flex',
-                    },
-                ],
-            });
+            if (filteredData.dates.length > 0) {
+                setChartData({
+                    labels: filteredData.dates,
+                    datasets: [
+                        {
+                            label: 'Production (Raw)',
+                            data: filteredData.production_raw,
+                            backgroundColor: '#5a9',
+                            borderColor: '#4d8',
+                            borderWidth: 1,
+                            barThickness: 'flex',
+                        },
+                        {
+                            label: 'Loss',
+                            data: filteredData.adjusted_production,
+                            backgroundColor: '#e74c3c',
+                            borderColor: '#d62c1a',
+                            borderWidth: 1,
+                            barThickness: 'flex',
+                        },
+                    ],
+                });
+            } else {
+                setChartData(null); // No data to show
+            }
+
             setLoading(false);
         } catch (err) {
             setError(err.message);
@@ -90,13 +99,23 @@ const LossGraph = () => {
     if (loading) return <div className="bar-chart loading">Loading...</div>;
     if (error) return <div className="bar-chart error">Error: {error}</div>;
 
+    if (!chartData) return null; // Do not render the graph if no data
+
+    const getSeverityLevel = (severityRange) => {
+        const severityValue = parseInt(severityRange); // Convert the severity range (e.g. "5%" -> 5)
+        if (severityValue >= 1 && severityValue <= 3) return 'Low';
+        if (severityValue >= 4 && severityValue <= 6) return 'Moderate';
+        if (severityValue >= 7 && severityValue <= 10) return 'Severe';
+        return 'Mixed';
+    };
+
     return (
-        <div className="LossGraph-container">
-            <div className="LossGraph-description">
-                <h2>Production Against Loss Due to Diseases</h2>
+        <>
+    <div className="LossGraph-description">
+                <h2>Production Against Loss Due to VSD Disease</h2>
                 <p>
                     This graph compares raw Cacao Fruit Production values to adjusted values that reflect
-                    losses caused by leaf and branch diseases. Use this chart to understand the
+                    losses caused by Vascular Streak Dieback (VSD) Disease. Use this chart to understand the
                     impact of these losses on overall production, focusing on 2024 and future projections.
                 </p>
                 <p>
@@ -104,8 +123,18 @@ const LossGraph = () => {
                     disease impact and improve yield over time.
                 </p>
             </div>
+
+        <div className="LossGraph-container">
+            
             <div className="LossGraph-chart">
                 <div className="chart-container" ref={chartRef}>
+                    {/* Display VSD Details */}
+                    {forecastDetails && (
+                        <div className="forecast-details">
+                            <p><strong>VSD Disease Loss:</strong> {forecastDetails.severity_range[0]}</p>
+                            <p><strong>Severity Level:</strong> {getSeverityLevel(forecastDetails.severity_range[0])}</p>
+                        </div>
+                    )}
                     <Bar
                         data={chartData}
                         options={{
@@ -113,7 +142,7 @@ const LossGraph = () => {
                             plugins: {
                                 title: {
                                     display: true,
-                                    text: 'Production Against Loss Due to Diseases (2025 and Beyond)',
+                                    text: 'Production Against Loss Due to Vascular Streak Dieback (VSD) (2024 and Beyond)',
                                 },
                                 legend: {
                                     display: true, // Keep legend to distinguish datasets
@@ -148,12 +177,13 @@ const LossGraph = () => {
                     />
                 </div>
 
-                {/* Refresh Button */}
+                
+            </div>{/* Refresh Button */}
                 <div className="refresh-button-container">
                     <button className="refresh-button" onClick={fetchData}>Refresh Data</button>
                 </div>
-            </div>
         </div>
+        </>
     );
 };
 
