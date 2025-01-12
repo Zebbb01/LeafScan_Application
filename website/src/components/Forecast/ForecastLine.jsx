@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Line } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Tooltip, Legend, Filler } from 'chart.js';
 import './ForecastLine.css';  // Ensure you import the CSS file here
+import Spinner from '../Spinner/SpinnerSticky';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Tooltip, Legend, Filler);
 
@@ -62,7 +63,7 @@ const ForecastLine = () => {
               tension: 0.1,
               pointRadius: 0,
               pointHoverRadius: 5,
-              showLine: true,          // Ensure the line is rendered
+              borderDash: [10, 5],
             },
           ],                   
         });
@@ -77,7 +78,7 @@ const ForecastLine = () => {
     fetchData();
   }, []);  // Fetch data on component mount
 
-  if (loading) return <div className="loading">Loading...</div>;
+  if (loading) return <Spinner />;
   if (error) return <div className="error">Error: {error}</div>;
 
   return (

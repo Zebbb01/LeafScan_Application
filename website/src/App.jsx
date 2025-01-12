@@ -1,5 +1,5 @@
 import React, { Suspense, useState, useEffect } from 'react';
-import { Routes, Route, BrowserRouter, useLocation } from 'react-router-dom';
+import { Routes, Route, BrowserRouter, useLocation, Navigate } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import video from './assets/Cacao farming (360p).mp4'; 
@@ -17,6 +17,7 @@ const SignUp = React.lazy(() => import('./components/SignUp/SignUp'));
 const Login = React.lazy(() => import('./components/Login/Login'));
 const UpdateProfile = React.lazy(() => import('./components/UpdateProfile/UpdateProfile'));
 const Scan = React.lazy(() => import('./components/Scan/Scan'));
+const EditDisease = React.lazy(() => import('./components/Scan/EditDisease'));
 const Forecast = React.lazy(() => import('./components/Forecast/ForecastLine'));
 const BarGraph = React.lazy(() => import('./components/BarGraph/BarGraph'));
 const UploadCsv = React.lazy(() => import('./components/ForecastDamage/UploadCsv'));
@@ -24,13 +25,23 @@ const ForecastDamage = React.lazy(() => import('./components/ForecastDamage/Fore
 const ForecastLossGraph = React.lazy(() => import('./components/ForecastDamage/ForecastLossGraph'));
 const LossGraph = React.lazy(() => import('./components/LossGraph/LossGraph'));
 const PredictLossGraph = React.lazy(() => import('./components/PredictLossGraph/PredictLossGraph'));
+const ReportTable = React.lazy(() => import('./components/ReportData/ReportData'));
 
 const App = () => {
   const [user, setUser] = useState(null);
   const [playState, setPlayState] = useState(false);
   const location = useLocation();
-  const [isDataLoaded, setIsDataLoaded] = useState(false);
-  const [loadingData, setLoadingData] = useState(true); // Track if data is loading
+  const [isDataLoaded, setIsDataLoaded] = useState(false);  // State for tracking data load
+  const [isGraphVisible, setIsGraphVisible] = useState(false);
+
+  const handleGraphToggle = () => {
+    setIsGraphVisible(prevState => !prevState);
+  };
+
+  const handleLogout = () => {
+    setUser(null);
+    localStorage.removeItem('user');
+  };
 
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
@@ -40,21 +51,23 @@ const App = () => {
   }, []);
 
   useEffect(() => {
-    if (['/', '/signup', location.pathname.startsWith('/update/')].includes(location.pathname)) {
+    const hiddenNavbarRoutes = ['/', '/signup', location.pathname.startsWith('/update/','/edit-disease')];
+    if (hiddenNavbarRoutes.some(route => location.pathname === route)) {
       document.body.classList.add('authBackground');
     } else {
       document.body.classList.remove('authBackground');
     }
   }, [location.pathname]);
 
-  const handleLogout = () => {
-    setUser(null);
-    localStorage.removeItem('user');
-  };
+  useEffect(() => {
+    if (user) {
+      setIsGraphVisible(false); 
+    }
+  }, [user]);
 
   return (
     <>
-      {(location.pathname === '/' || location.pathname === '/signup' || location.pathname.startsWith('/update/')) && (
+      {(location.pathname === '/' || location.pathname === '/signup' || location.pathname.startsWith('/update/') || location.pathname === '/edit-disease') && (
         <>
           <video autoPlay muted loop className="video-background">
             <source src={video} type="video/mp4" />
@@ -64,86 +77,69 @@ const App = () => {
         </>
       )}
 
-      {!(location.pathname === '/' || location.pathname === '/signup' || location.pathname.startsWith('/update/')) && (
-        <Suspense fallback={<Spinner message="Loading Navbar..." />}>
+      {!(location.pathname === '/' || location.pathname === '/signup' || location.pathname === '/edit-disease' || location.pathname.startsWith('/update/')) && (
+        <Suspense fallback={<Spinner />}>
           <Navbar user={user} onLogout={handleLogout} />
         </Suspense>
       )}
 
-      <Suspense fallback={<Spinner message="Loading content..." />}>
+      <Suspense fallback={<Spinner />}>
         <Routes>
-          <Route path='/' element={<Login setUser={setUser} />} />
+          <Route
+            path='/'
+            element={user ? <Navigate to="/home" /> : <Login setUser={setUser} />}
+          />
           <Route path='/signup' element={<SignUp />} />
           <Route path='/update/:id' element={<UpdateProfile setUser={setUser} />} />
-          <Route path='/home' element={
-            <div className='App'>
-              {user && (
-                <>
-                  <Suspense fallback={<Spinner message="Loading Hero..." />}>
-                    <Hero />
-                  </Suspense>
-                  <div className="container">
-                    <Suspense fallback={<Spinner message="Loading Title..." />}>
-                      <Title subTitle='Disease Detection' title='Scan Your Cacao Leaf' />
-                    </Suspense>
-                    <Suspense fallback={<Spinner message="Loading Scan..." />}>
-                      <Scan />
-                    </Suspense>
-                    <Suspense fallback={<Spinner message="Loading Title..." />}>
-                      <Title subTitle='Disease Overview' title='Types of Cacao Leaf Diseases' />
-                    </Suspense>
-                    <Suspense fallback={<Spinner message="Loading Collections..." />}>
-                      <Collections />
-                    </Suspense>
-                    <Suspense fallback={<Spinner message="Loading Title..." />}>
-                      <Title subTitle='Damage Forecasting' title='Forecasted Impact on Cacao Fruit Production' />
-                    </Suspense>
-                    <Suspense fallback={<Spinner message="Loading Forecast Damage..." />}>
-                      <UploadCsv setIsDataLoaded={setIsDataLoaded} setLoadingData={setLoadingData} />
-                    </Suspense>
-                    {isDataLoaded && (
-                      <Suspense fallback={<Spinner message="Loading Forecast Damage..." />}>
-                        <ForecastDamage setIsDataLoaded={setIsDataLoaded} isDataLoaded={isDataLoaded} />
-                      </Suspense>
-                    )}
-                    <Suspense fallback={<Spinner message="Loading ForecastLossGraph..." />}>
-                      {isDataLoaded && <ForecastLossGraph />}
-                    </Suspense>
-                    <Suspense fallback={<Spinner message="Loading LossGraph..." />}>
-                      {isDataLoaded && <LossGraph />}
-                    </Suspense>
-                    <Suspense fallback={<Spinner message="Loading PredictLossGraph..." />}>
-                      {isDataLoaded && <PredictLossGraph />}
-                    </Suspense>
-                    <Suspense fallback={<Spinner message="Loading Title..." />}>
-                      <Title subTitle='Forecasting' title='Cacao Fruit Production Forecast' />
-                    </Suspense>
-                    <Suspense fallback={<Spinner message="Loading Forecast..." />}>
-                      <Forecast />
-                    </Suspense>
-                    <Suspense fallback={<Spinner message="Loading BarGraph..." />}>
-                      <BarGraph />
-                    </Suspense>
-                    <Suspense fallback={<Spinner message="Loading About..." />}>
-                      <About setPlayState={setPlayState} />
-                    </Suspense>
-                    <Suspense fallback={<Spinner message="Loading Title..." />}>
-                      <Title subTitle='Reach Out' title='Contact Us' />
-                    </Suspense>
-                    <Suspense fallback={<Spinner message="Loading Contact..." />}>
-                      <Contact />
-                    </Suspense>
-                    <Suspense fallback={<Spinner message="Loading Footer..." />}>
-                      <Footer />
-                    </Suspense>
-                  </div>
-                  <Suspense fallback={<Spinner message="Loading VideoPlayer..." />}>
-                    <VideoPlayer playState={playState} setPlayState={setPlayState} />
-                  </Suspense>
-                </>
-              )}
-            </div>
-          } />
+          <Route path='/edit-disease' element={<EditDisease />} />
+          <Route
+            path='/home'
+            element={user ? (
+              <div className='App'>
+                {user && (
+                  <>
+                    <Suspense fallback={<Spinner message="Loading Hero..." />}><Hero /></Suspense>
+                    <div className="container">
+                      <Suspense fallback={<Spinner />}><Title subTitle='Disease Detection' title='Scan Your Cacao Leaf' /></Suspense>
+                      <Suspense fallback={<Spinner />}><Scan /></Suspense>
+                      <Suspense fallback={<Spinner />}><Title subTitle='Disease Overview' title='Types of Cacao Leaf Diseases' /></Suspense>
+                      <Suspense fallback={<Spinner />}><Collections /></Suspense>
+                      <Suspense fallback={<Spinner />}><Title subTitle='Damage Forecasting' title='Forecasted Impact on Cacao Fruit Production' /></Suspense>
+                      <Suspense fallback={<Spinner />}><UploadCsv setIsDataLoaded={setIsDataLoaded} /></Suspense>
+                      {isDataLoaded && (
+                        <>
+                          <Suspense fallback={<Spinner />}><ReportTable key={isDataLoaded} /></Suspense>
+                          <div className={`graph-container ${isGraphVisible ? 'show' : ''}`}>
+                            {isGraphVisible && (
+                              <>
+                                <Suspense fallback={<Spinner />}><ForecastDamage isDataLoaded={isDataLoaded} /></Suspense>
+                                <Suspense fallback={<Spinner />}><ForecastLossGraph /></Suspense>
+                                <Suspense fallback={<Spinner />}><LossGraph /></Suspense>
+                                <Suspense fallback={<Spinner />}><PredictLossGraph /></Suspense>
+                              </>
+                            )}
+                          </div>
+                          <button className='show-graph-btn' onClick={handleGraphToggle}>
+                            {isGraphVisible ? 'Hide Graph' : 'Show Graph'}
+                          </button>
+                        </>
+                      )}
+                    </div>
+                    <Suspense fallback={<Spinner />}><Title subTitle='Forecasting' title='Cacao Fruit Production Forecast' /></Suspense>
+                    <Suspense fallback={<Spinner />}><Forecast /></Suspense>
+                    <Suspense fallback={<Spinner />}><BarGraph /></Suspense>
+                    <Suspense fallback={<Spinner />}><About setPlayState={setPlayState} /></Suspense>
+                    <Suspense fallback={<Spinner />}><Title subTitle='Reach Out' title='Contact Us' /></Suspense>
+                    <Suspense fallback={<Spinner />}><Contact /></Suspense>
+                    <Suspense fallback={<Spinner />}><Footer /></Suspense>
+                    <Suspense fallback={<Spinner />}><VideoPlayer playState={playState} setPlayState={setPlayState} /></Suspense>
+                  </>
+                )}
+              </div>
+            ) : (
+              <Navigate to="/" />
+            )}
+          />
         </Routes>
       </Suspense>
 

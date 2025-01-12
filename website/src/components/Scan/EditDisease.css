@@ -1,0 +1,115 @@
+.pf-update-disease-container {
+    max-width: 600px;
+    margin: 30px auto; /* Added margin to top and bottom */
+    padding: 20px;
+    background-color: #FFF8E6;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.pf-update-disease-container.white-background {
+    margin-top: 15rem;
+    margin-bottom: 30px; /* Adjust the bottom margin for the white-background state */
+}
+
+.form-control-disease{
+    background-color: rgb(249, 250, 203);
+    cursor: no-drop;
+}
+
+.edit-disease-title {
+    font-size: 28px;
+    margin-bottom: 20px;
+    color: #016A70;
+    text-align: center;
+}
+.disease-Title{
+    font-size: 20px;
+    margin-bottom: 20px;
+    color: #016A70;
+}
+.edit-disease-select {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #016A70;
+    border-radius: 6px;
+    margin-bottom: 15px;
+    font-size: 14px;
+    color: #016A70;
+    cursor: pointer;
+}
+
+.edit-disease-form label {
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.edit-disease-form input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #016A70;
+    border-radius: 6px;
+    font-size: 14px;
+    margin-bottom: 20px;
+}
+
+.edit-disease-form textarea {
+    width: 100%; /* Keep width fixed */
+    padding: 12px;
+    border: 1px solid #016A70;
+    border-radius: 6px;
+    font-size: 14px;
+    margin-bottom: 20px;
+    resize: vertical; /* Allows vertical resizing */
+    overflow-y: auto; /* Allow vertical overflow */
+}
+
+.edit-disease-form textarea:focus {
+    outline: none; /* Remove the default focus outline */
+    box-shadow: 0 0 5px rgba(0, 102, 153, 0.5); /* Add custom focus shadow */
+}
+
+.form-control{
+    color: #016A70;
+}
+
+.edit-disease-form .button-container {
+    display: flex;
+    justify-content: space-between;
+}
+
+.btn-primary-disease {
+    background-color: yellowgreen;
+    width: 48%;
+    margin: 5px 1%;
+    padding: 12px;
+    border: none;
+    border-radius: 6px;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.btn-primary-disease:hover {
+    background-color: rgb(125, 165, 45); /* Darker shade of blue on hover */
+    transform: scale(1.05); /* Slightly enlarges the button on hover */
+}
+
+.btn-secondary-disease {
+    background-color: #f5221a;
+    width: 48%;
+    margin: 5px 1%;
+    padding: 12px;
+    border: none;
+    border-radius: 6px;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.btn-secondary-disease:hover {
+    background-color: #b32e29; /* Darker shade of gray on hover */
+    transform: scale(1.05); /* Slightly enlarges the button on hover */
+}

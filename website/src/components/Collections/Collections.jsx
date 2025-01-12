@@ -9,7 +9,7 @@ const preventionData = {
   "Leaf Spot": "To prevent Leaf Spot, ensure proper spacing between plants to allow air circulation, avoid overhead watering, and remove any affected leaves.",
   "Early Blight": "Early Blight can be prevented by rotating crops, using resistant varieties, and applying fungicides as needed.",
   "Late Blight": "Prevent Late Blight by using certified disease-free seeds, removing infected plants, and applying fungicides before wet weather.",
-  "DieBack": "Prune affected branches and apply fungicide sprays regularly."
+  "VSD": "Prune affected branches and apply fungicide sprays regularly."
 }
 
 const Collections = () => {
@@ -39,10 +39,10 @@ const Collections = () => {
           <p>Late Blight</p>
         </div>
       </div>
-      <div className='collection' onClick={() => setSelectedDisease('DieBack')}>
-        <img src={collection_4} alt='DiieBack' />
+      <div className='collection' onClick={() => setSelectedDisease('VSD')}>
+        <img src={collection_4} alt='VSD' />
         <div className='caption'>
-          <p>DieBack</p>
+          <p>VSD</p>
         </div>
       </div>
 

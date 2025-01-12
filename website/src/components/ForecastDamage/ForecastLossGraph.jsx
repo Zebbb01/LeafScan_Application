@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import Spinner from '../Spinner/SpinnerSticky';
 import { Bar } from 'react-chartjs-2';
 import {
     Chart as ChartJS,
@@ -78,7 +79,7 @@ const ForecastLossGraph = () => {
         fetchData();
     }, []);
 
-    if (loading) return <div>Loading...</div>;
+    if (loading) return <Spinner />;
     if (error) return <div>Error: {error}</div>;
 
     const getSeverityLevel = (severityRange) => {
@@ -115,7 +116,7 @@ const ForecastLossGraph = () => {
                             plugins: {
                                 title: {
                                     display: true,
-                                    text: 'Forecasted Loss and Adjusted Production Due to Vascular Streak Dieback (VSD)',
+                                    text: 'Forecasted Production Loss and Adjusted Output Due to Vascular Streak Dieback (VSD) Over the Next 8 Quarters (2 Years)',
                                 },
                                 tooltip: {
                                     callbacks: {
@@ -134,7 +135,7 @@ const ForecastLossGraph = () => {
                                 y: {
                                     title: {
                                         display: true,
-                                        text: 'Production', // Label for Y-axis
+                                        text: 'Production (Metric Tons)', // Label for Y-axis
                                     },
                                 },
                             },

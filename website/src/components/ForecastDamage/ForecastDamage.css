@@ -64,6 +64,76 @@
   background-color: #45a049; /* Darker green on hover */
 }
 
+.graph-header {
+  width: 83%;
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 20px;
+}
+
+.quarter-filter-container {
+  display: flex;
+  gap: 15px; /* Space between filters */
+}
+
+.quarter-filter {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.quarter-filter label {
+  font-size: 14px;
+  font-weight: bold;
+  margin-bottom: 5px;
+  color: #333;
+}
+
+.quarter-filter select {
+  padding: 5px 10px;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+  font-size: 14px;
+  color: #333;
+}
+
+.quarter-filter select:hover {
+  border-color: #888;
+}
+
+/* Style for Apply Filter button */
+.filter-button {
+  background-color: #007bff; /* Accessible blue color */
+  color: #ffffff; /* White text */
+  font-size: 14px; /* Increase font size for readability */
+  padding: 8px 10px; /* Larger padding for easier clicking */
+  border: none;
+  border-radius: 5px; /* Rounded corners for a friendly look */
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+}
+
+.filter-button:hover {
+  background-color: #0056b3; /* Darker blue on hover */
+}
+
+.filter-button:active {
+  background-color: #003d80; /* Even darker blue when pressed */
+}
+
+
+@media (max-width: 768px) {
+  .quarter-filter-container {
+    flex-direction: column; /* Stack filters on smaller screens */
+    align-items: flex-end;
+  }
+
+  .quarter-filter {
+    align-items: flex-end;
+  }
+}
+
 
 
 @media (max-width: 1000px) {

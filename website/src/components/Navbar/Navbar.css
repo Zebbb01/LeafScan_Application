@@ -11,6 +11,7 @@ nav {
   align-items: center;
   justify-content: space-between;
   z-index: 10;
+  transition: 0.5s;
 }
 /* Navbar with full opacity */
 .full-opacity-nav {

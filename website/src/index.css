@@ -94,6 +94,38 @@ a {
   transition: 0.3s;
 }
 
+.graph-container {
+    opacity: 0; /* Initially hidden */
+    height: 0; /* Collapse the element when hidden */
+    overflow: hidden; /* Prevents content overflow when collapsed */
+    transition: opacity 0.5s ease, height 0.5s ease; /* Transition for smooth fade and collapse */
+}
+
+.graph-container.show {
+    opacity: 1; /* Fully visible */
+    height: auto; /* Expands to the content height */
+}
+
+.show-graph-btn {
+    background-color: #17a2b8;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 15px;
+    border-radius: 5px;
+    transition: background-color 0.3s, transform 0.3s;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.show-graph-btn:hover {
+    background-color: #138496;
+}
+
+
 input {
         margin: 5px 0;
         padding: 10px;

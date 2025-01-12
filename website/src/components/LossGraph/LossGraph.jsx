@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import Spinner from '../Spinner/SpinnerSticky';
 import { Bar } from 'react-chartjs-2';
 import {
     Chart as ChartJS,
@@ -19,6 +20,8 @@ const LossGraph = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [forecastDetails, setForecastDetails] = useState(null);
+    const [startQuarter, setStartQuarter] = useState('All');
+    const [endQuarter, setEndQuarter] = useState('All');
     const chartRef = useRef(null);
 
     const fetchData = async () => {
@@ -45,13 +48,32 @@ const LossGraph = () => {
                 return acc;
             }, { dates: [], production_raw: [], adjusted_production: [] });
 
-            if (filteredData.dates.length > 0) {
+            // Apply filters based on selected start and end quarters
+            let filteredDates = filteredData.dates;
+            let filteredRawProduction = filteredData.production_raw;
+            let filteredAdjustedProduction = filteredData.adjusted_production;
+
+            if (startQuarter !== 'All') {
+                const startIdx = filteredDates.indexOf(startQuarter);
+                filteredDates = filteredDates.slice(startIdx);
+                filteredRawProduction = filteredRawProduction.slice(startIdx);
+                filteredAdjustedProduction = filteredAdjustedProduction.slice(startIdx);
+            }
+
+            if (endQuarter !== 'All') {
+                const endIdx = filteredDates.indexOf(endQuarter);
+                filteredDates = filteredDates.slice(0, endIdx + 1);
+                filteredRawProduction = filteredRawProduction.slice(0, endIdx + 1);
+                filteredAdjustedProduction = filteredAdjustedProduction.slice(0, endIdx + 1);
+            }
+
+            if (filteredDates.length > 0) {
                 setChartData({
-                    labels: filteredData.dates,
+                    labels: filteredDates,
                     datasets: [
                         {
                             label: 'Production (Raw)',
-                            data: filteredData.production_raw,
+                            data: filteredRawProduction,
                             backgroundColor: '#5a9',
                             borderColor: '#4d8',
                             borderWidth: 1,
@@ -59,7 +81,7 @@ const LossGraph = () => {
                         },
                         {
                             label: 'Loss',
-                            data: filteredData.adjusted_production,
+                            data: filteredAdjustedProduction,
                             backgroundColor: '#e74c3c',
                             borderColor: '#d62c1a',
                             borderWidth: 1,
@@ -78,7 +100,6 @@ const LossGraph = () => {
         }
     };
 
-    // Initial data fetch when the component mounts
     useEffect(() => {
         fetchData();
     }, []);
@@ -96,10 +117,13 @@ const LossGraph = () => {
         };
     }, []);
 
-    if (loading) return <div className="bar-chart loading">Loading...</div>;
-    if (error) return <div className="bar-chart error">Error: {error}</div>;
+    const handleStartQuarterChange = (event) => {
+        setStartQuarter(event.target.value);
+    };
 
-    if (!chartData) return null; // Do not render the graph if no data
+    const handleEndQuarterChange = (event) => {
+        setEndQuarter(event.target.value);
+    };
 
     const getSeverityLevel = (severityRange) => {
         const severityValue = parseInt(severityRange); // Convert the severity range (e.g. "5%" -> 5)
@@ -109,9 +133,14 @@ const LossGraph = () => {
         return 'Mixed';
     };
 
+    if (loading) return <Spinner />;
+    if (error) return <div className="bar-chart error">Error: {error}</div>;
+
+    if (!chartData) return null; // Do not render the graph if no data
+
     return (
         <>
-    <div className="LossGraph-description">
+            <div className="LossGraph-description">
                 <h2>Production Against Loss Due to VSD Disease</h2>
                 <p>
                     This graph compares raw Cacao Fruit Production values to adjusted values that reflect
@@ -123,66 +152,98 @@ const LossGraph = () => {
                     disease impact and improve yield over time.
                 </p>
             </div>
-
-        <div className="LossGraph-container">
-            
-            <div className="LossGraph-chart">
-                <div className="chart-container" ref={chartRef}>
-                    {/* Display VSD Details */}
-                    {forecastDetails && (
-                        <div className="forecast-details">
-                            <p><strong>VSD Disease Loss:</strong> {forecastDetails.severity_range[0]}</p>
-                            <p><strong>Severity Level:</strong> {getSeverityLevel(forecastDetails.severity_range[0])}</p>
-                        </div>
-                    )}
-                    <Bar
-                        data={chartData}
-                        options={{
-                            responsive: true,
-                            plugins: {
-                                title: {
-                                    display: true,
-                                    text: 'Production Against Loss Due to Vascular Streak Dieback (VSD) (2024 and Beyond)',
-                                },
-                                legend: {
-                                    display: true, // Keep legend to distinguish datasets
-                                    position: 'top',
-                                },
-                                tooltip: {
-                                    callbacks: {
-                                        label: (tooltipItem) =>
-                                            `${tooltipItem.dataset.label}: ${tooltipItem.raw.toFixed(2)}`, // 2 decimal precision
-                                    },
-                                },
-                            },
-                            scales: {
-                                x: {
+            <div className="graph-header">
+                <div className="quarter-filter-container">
+                    <div className="quarter-filter">
+                        <label>Start Quarter/Year: </label>
+                        <select value={startQuarter} onChange={handleStartQuarterChange}>
+                            <option value="Start" disabled>Start</option>
+                            <option value="All">All</option>
+                            {chartData?.labels?.map((quarter, index) => (
+                                <option key={index} value={quarter}>
+                                    {quarter}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+                    <div className="quarter-filter">
+                        <label>End Quarter/Year: </label>
+                        <select value={endQuarter} onChange={handleEndQuarterChange}>
+                            <option value="End" disabled>End</option>
+                            <option value="All">All</option>
+                            {chartData?.labels?.map((quarter, index) => (
+                                <option key={index} value={quarter}>
+                                    {quarter}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+                    <button
+                        className="filter-button"
+                        onClick={fetchData}
+                        aria-label="Apply Filters for Start and End Quarter/Year"
+                    >
+                        Apply Filter
+                    </button>
+                </div>
+                </div>
+            <div className="LossGraph-container">
+                
+                <div className="LossGraph-chart">
+                    <div className="chart-container" ref={chartRef}>
+                        {forecastDetails && (
+                            <div className="forecast-details">
+                                <p><strong>VSD Disease Loss:</strong> {forecastDetails.severity_range[0]}</p>
+                                <p><strong>Severity Level:</strong> {getSeverityLevel(forecastDetails.severity_range[0])}</p>
+                            </div>
+                        )}
+                        <Bar
+                            data={chartData}
+                            options={{
+                                responsive: true,
+                                plugins: {
                                     title: {
                                         display: true,
-                                        text: 'Quarter',
+                                        text: 'Production Against Loss Due to Vascular Streak Dieback (VSD) (2024 and Beyond)',
                                     },
-                                },
-                                y: {
-                                    title: {
+                                    legend: {
                                         display: true,
-                                        text: 'Production (in units)',
+                                        position: 'top',
                                     },
-                                    beginAtZero: true,
-                                    ticks: {
-                                        callback: (value) => value.toFixed(2), // 2 decimal precision for y-axis
+                                    tooltip: {
+                                        callbacks: {
+                                            label: (tooltipItem) =>
+                                                `${tooltipItem.dataset.label}: ${tooltipItem.raw.toFixed(2)}`, // 2 decimal precision
+                                        },
                                     },
                                 },
-                            },
-                        }}
-                    />
+                                scales: {
+                                    x: {
+                                        title: {
+                                            display: true,
+                                            text: 'Quarter',
+                                        },
+                                    },
+                                    y: {
+                                        title: {
+                                            display: true,
+                                            text: 'Production (Metric Tons)',
+                                        },
+                                        beginAtZero: true,
+                                        ticks: {
+                                            callback: (value) => value.toFixed(2), // 2 decimal precision for y-axis
+                                        },
+                                    },
+                                },
+                            }}
+                        />
+                    </div>
                 </div>
 
-                
-            </div>{/* Refresh Button */}
                 <div className="refresh-button-container">
                     <button className="refresh-button" onClick={fetchData}>Refresh Data</button>
                 </div>
-        </div>
+            </div>
         </>
     );
 };

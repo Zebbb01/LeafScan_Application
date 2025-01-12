@@ -9,7 +9,10 @@ import os
 
 # Import routes
 from routes.user_routes import init_user_routes
-from routes.ml_routes import init_ml_routes
+from routes.forecasting_routes import init_forecasting_routes
+from routes.image_routes import init_image_routes
+from routes.csv_routes import init_csv_routes
+from routes.report_routes import init_report_routes
 
 # Load environment variables
 load_dotenv()
@@ -52,7 +55,10 @@ def index(filename):
 
 # Initialize routes
 init_user_routes(app, mail)
-init_ml_routes(app)
+init_forecasting_routes(app)
+init_image_routes(app)
+init_csv_routes(app)
+init_report_routes(app)
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=5000, debug=True)

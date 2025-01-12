@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { Bar } from 'react-chartjs-2'; // Import Bar chart from react-chartjs-2
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
 import './BarGraph.css';
+import Spinner from '../Spinner/SpinnerSticky';
 
 // Register necessary chart components
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
@@ -58,7 +59,7 @@ const BarGraph = () => {
         };
     }, []);
 
-    if (loading) return <div className="bar-chart loading">Loading...</div>;
+    if (loading) return <Spinner />;
     if (error) return <div className="bar-chart error">Error: {error}</div>;
 
     return (
@@ -98,7 +99,7 @@ const BarGraph = () => {
                                 y: {
                                     title: {
                                         display: true,
-                                        text: 'Production',
+                                        text: 'Production (Metric Tons)',
                                     },
                                     beginAtZero: true, // Ensure y-axis starts at 0
                                     ticks: {

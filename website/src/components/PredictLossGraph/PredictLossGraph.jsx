@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import Spinner from '../Spinner/SpinnerSticky';
 import { Bar } from 'react-chartjs-2';
 import {
     Chart as ChartJS,
@@ -116,7 +117,7 @@ const PredictLossGraph = () => {
             y: {
                 title: {
                     display: true,
-                    text: 'Production (in units)',
+                    text: 'Production (Metric Tons)',
                 },
                 beginAtZero: true,
                 ticks: {
@@ -127,7 +128,7 @@ const PredictLossGraph = () => {
     };
 
     if (loading) {
-        return <div className="bar-chart loading">Loading...</div>;
+        return <Spinner />;
     }
     
     // Hide the specific error message "No future data available for forecasting."
