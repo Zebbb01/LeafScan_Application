@@ -3,7 +3,7 @@ from flask_cors import CORS
 from flask_mail import Mail
 from flask_migrate import Migrate
 from flask_bcrypt import Bcrypt
-from models import db
+from models import db, DiseaseInfo  # Import DiseaseInfo model
 from dotenv import load_dotenv
 import os
 
@@ -43,6 +43,10 @@ CORS(app, supports_credentials=True, resources={r"/*": {"origins": "*"}})
 # Initialize PostgreSQL database and migration
 db.init_app(app)
 migrate = Migrate(app, db)
+
+# Seed the database
+with app.app_context():
+    DiseaseInfo.seed()
 
 # Serve frontend
 website_folder = os.path.join(os.getcwd(), "..", "frontend", "build")
