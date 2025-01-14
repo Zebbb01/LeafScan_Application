@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import "./Scan.css";
 import { FaChevronRight, FaChevronLeft } from "react-icons/fa";
-import Spinner from "../Spinner/Spinner";
+import SpinnerScan from "../Spinner/SpinnerScan";
 
 const Scan = () => {
   const [totalScans, setTotalScans] = useState(0);
@@ -175,7 +175,7 @@ const Scan = () => {
   return (
     <>
       <div className="scan-container">
-        {loading && <Spinner />}
+        {loading && <SpinnerScan />}
         
         {/* Error Modal */}
         {showErrorModal && (
