@@ -1,12 +1,9 @@
-from flask import jsonify, send_file
-from io import BytesIO
+from flask import jsonify
 from statsmodels.tsa.holtwinters import ExponentialSmoothing
 from sklearn.metrics import mean_absolute_error
 import pandas as pd
 from models import Production
 from flask import session
-from reportlab.lib.pagesizes import letter
-from reportlab.pdfgen import canvas
 
 from routes.utility import fetch_production_data, time_series_k_fold
 
