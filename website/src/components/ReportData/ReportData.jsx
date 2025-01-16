@@ -4,11 +4,10 @@ import './ReportData.css';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 
-const ReportTable = () => {
+const ReportTable = ({ csvUploaded, severityChanged, setSeverityChanged }) => {
     const [reportData, setReportData] = useState(null);
     const [error, setError] = useState(null);
     const [showTable, setShowTable] = useState(false);
-    const [csvUploaded, setCsvUploaded] = useState(false);
     const [isReadyToDownload, setIsReadyToDownload] = useState(false); // State to track if report is ready
     const tableRef = useRef(null);
 
@@ -23,6 +22,7 @@ const ReportTable = () => {
             setReportData(result);
             setShowTable(true); // Show table after fetching data
             setIsReadyToDownload(true); // Mark report as ready for download
+            setSeverityChanged(false); // Reset severityChanged state
         } catch (err) {
             setError(err.message);
             toast.error(`Error fetching report data: ${err.message}`, {
@@ -33,14 +33,6 @@ const ReportTable = () => {
         }
     };
 
-    const handleCsvUpload = (event) => {
-        const file = event.target.files[0];
-        if (file) {
-            setCsvUploaded(true); // Trigger refetch after CSV upload
-        }
-    };
-    
-
     const handleDownloadPdf = async () => {
         if (!tableRef.current) return;
         try {
@@ -48,8 +40,8 @@ const ReportTable = () => {
             const pageWidth = pdf.internal.pageSize.width;
     
             const topMargin = 15; 
-            const leftMargin = 10;
-            const rightMargin = 10;
+            const leftMargin = 15;
+            const rightMargin = 15;
             const contentWidth = pageWidth - leftMargin - rightMargin;
     
             // Title
@@ -65,10 +57,25 @@ const ReportTable = () => {
     
             // Metadata
             const { severity_label, severity_value, loss_percentage, data, next_8_quarters_forecast, adjusted_production, actual_losses } = reportData;
+            
             pdf.setFontSize(12);
             pdf.setFont('helvetica', 'normal');
-            pdf.text(`Severity Level: ${severity_label} (Value: ${severity_value})`, leftMargin, topMargin + 15);
-            pdf.text(`Loss Percentage: ${loss_percentage}%`, leftMargin, topMargin + 25);
+    
+            // Left-aligned text
+            pdf.text(`Severity Level: ${severity_label}`, leftMargin, topMargin + 15);
+            pdf.text(`Loss Percentage: ${loss_percentage}%`, leftMargin, topMargin + 23);
+    
+            // Right-aligned text
+            const rightTextStart = pageWidth - rightMargin;
+            pdf.setFontSize(12);
+            pdf.setFont('helvetica', 'bold');
+            pdf.text(`Loss Measured`, rightTextStart, topMargin + 15, { align: 'right' });
+    
+            pdf.setFontSize(9);
+            pdf.setFont('helvetica', 'normal');
+            pdf.text(`Low   =     1% - 3%`, rightTextStart, topMargin + 20, { align: 'right' });
+            pdf.text(`Moderate   =     4% - 6%`, rightTextStart, topMargin + 24, { align: 'right' });
+            pdf.text(`Severe   =   7% - 10%`, rightTextStart, topMargin + 28, { align: 'right' });
     
             // Data Table
             const tableData = data.map(row => [
@@ -141,7 +148,7 @@ const ReportTable = () => {
 
     useEffect(() => {
         fetchReportData();
-    }, [csvUploaded]);  // Fetch data when CSV is uploaded or re-triggered
+    }, [csvUploaded, severityChanged]);  // Fetch data when CSV is uploaded or severity changes
 
     if (error) {
         return <div className="error">{error}</div>;
@@ -173,12 +180,11 @@ const ReportTable = () => {
     return (
         <>
             <div className="table-actions">
-                {isReadyToDownload && (
+                {isReadyToDownload && !severityChanged && (
                     <button onClick={handleDownloadPdf} className="download-button">
                         Download Report as PDF
                     </button>
                 )}
-                <input type="file" accept=".csv" onChange={handleCsvUpload} className="upload-csv" />
             </div>
 
             {showTable && (
@@ -240,6 +246,5 @@ const ReportTable = () => {
         </>
     );
 };
-
 
 export default ReportTable;

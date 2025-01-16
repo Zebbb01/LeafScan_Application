@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import './UploadCsv.css';
 import { toast } from 'react-toastify';
 
-const UploadCsv = ({ setIsDataLoaded }) => {
+const UploadCsv = ({ setIsDataLoaded, setCsvUploaded, setSeverityChanged }) => {
     const [file, setFile] = useState(null);
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(false);
@@ -65,6 +65,8 @@ const UploadCsv = ({ setIsDataLoaded }) => {
             localStorage.setItem('severity', severity); // Save severity to localStorage when upload is successful
             setIsDataLoaded(true);
             setIsFileUploaded(true);
+            setCsvUploaded(true); // Notify parent component that CSV is uploaded
+            setSeverityChanged(true); // Notify parent component that severity has changed
 
             toast.success(`CSV uploaded successfully with severity ${severity} : ${getSeverityLabel()}`, {
                 position: "top-center",

@@ -33,6 +33,8 @@ const App = () => {
   const location = useLocation();
   const [isDataLoaded, setIsDataLoaded] = useState(false);  // State for tracking data load
   const [isGraphVisible, setIsGraphVisible] = useState(false);
+  const [csvUploaded, setCsvUploaded] = useState(false); // State for tracking CSV upload
+  const [severityChanged, setSeverityChanged] = useState(false); // State for tracking severity change
 
   const handleGraphToggle = () => {
     setIsGraphVisible(prevState => !prevState);
@@ -105,10 +107,10 @@ const App = () => {
                       <Suspense fallback={<Spinner />}><Title subTitle='Disease Overview' title='Types of Cacao Leaf Diseases' /></Suspense>
                       <Suspense fallback={<Spinner />}><Collections /></Suspense>
                       <Suspense fallback={<Spinner />}><Title subTitle='Damage Forecasting' title='Forecasted Impact on Cacao Fruit Production' /></Suspense>
-                      <Suspense fallback={<Spinner />}><UploadCsv setIsDataLoaded={setIsDataLoaded} /></Suspense>
+                      <Suspense fallback={<Spinner />}><UploadCsv setIsDataLoaded={setIsDataLoaded} setCsvUploaded={setCsvUploaded} setSeverityChanged={setSeverityChanged} /></Suspense>
                       {isDataLoaded && (
                         <>
-                          <Suspense fallback={<Spinner />}><ReportTable key={isDataLoaded} /></Suspense>
+                          <Suspense fallback={<Spinner />}><ReportTable csvUploaded={csvUploaded} severityChanged={severityChanged} setSeverityChanged={setSeverityChanged} /></Suspense>
                           <div className={`graph-container ${isGraphVisible ? 'show' : ''}`}>
                             {isGraphVisible && (
                               <>
