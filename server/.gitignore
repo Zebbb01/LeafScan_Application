@@ -38,3 +38,4 @@ package-lock.json
 
 # Ignore any saved models
 saved_models/
+.vercel

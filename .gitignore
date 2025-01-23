@@ -41,3 +41,4 @@ frontend/dist/
 *.temp
 
 server/uploads/
+.vercel

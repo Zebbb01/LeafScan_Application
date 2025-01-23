@@ -1,0 +1,4 @@
+# .vercelignore
+node_modules/
+dist/
+large-file.zip
