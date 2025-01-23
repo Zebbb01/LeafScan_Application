@@ -61,7 +61,6 @@ export default function ForgotPasswordScreen() {
             type: "danger",
           });
         }
-        console.error("Error during password reset:", error);
       });
   };
 

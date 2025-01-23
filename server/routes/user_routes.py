@@ -29,7 +29,6 @@ def init_user_routes(app, mail):  # Accept mail as a parameter
         msg.body = f'Your verification code is: {code}'
         mail.send(msg)  # Use the passed mail object to send the email
 
-    
     # Forgot Password
     @app.route("/api/forgot_password", methods=["POST"])
     def forgot_password():
@@ -58,11 +57,11 @@ def init_user_routes(app, mail):  # Accept mail as a parameter
                       sender=os.getenv('MAIL_USERNAME'), 
                       recipients=[email])
         msg.body = f'Your new password is: {new_password}'
-        email.send(msg)
+        mail.send(msg)  # Use the passed mail object to send the email
 
         return jsonify({"message": "New password sent to your email"}), 200
 
-    # SignUp
+    # SignUp Mobile
     @app.route("/api/create_token", methods=["POST"])
     def create_token():
         name = request.json["name"]
@@ -154,7 +153,7 @@ def init_user_routes(app, mail):  # Accept mail as a parameter
             return jsonify({"error": "Wrong password"}), 401
         
         if not user.is_verified:
-            return jsonify({"error": "Account not verified"}), 403
+            return jsonify({"error": "Account not verified", "user": {"id": user.id}}), 403
     
         session["user_id"] = user.id
     
@@ -217,5 +216,3 @@ def init_user_routes(app, mail):  # Accept mail as a parameter
             print(e)
             db.session.rollback()
             return jsonify({"error": "Could not update profile"}), 500
-
-

@@ -14,7 +14,7 @@ import styles from "@/styles/auth/verify"
 
 export default function VerifyAccountScreen() {
   const router = useRouter();
-  const { email } = useLocalSearchParams();
+  const { email, userId } = useLocalSearchParams();
   const [code, setCode] = useState(new Array(4).fill(''));
   const inputs = useRef(code.map(() => React.createRef<TextInput>()));
 
@@ -48,7 +48,6 @@ export default function VerifyAccountScreen() {
       } else {
         Toast.show('Invalid verification code. Please try again.', { type: 'danger' });
       }
-      console.error('Error during verification:', error);
     });
   };
 
@@ -87,4 +86,3 @@ export default function VerifyAccountScreen() {
     </View>
   );
 }
-

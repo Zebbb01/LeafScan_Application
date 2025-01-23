@@ -19,7 +19,7 @@ def init_image_routes(app):
     model = load_model(model_path, compile=False)
     model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
 
-    CLASS_NAMES = ["Vascular Streak Dieback (VSD)", "N/A", "Invalid Image", "Cacao Early Blight", "N/A", "Cacao Late Blight", "Cacao Leaf Spot"]
+    CLASS_NAMES = ["Vascular Streak Dieback (VSD)", "N/A", "Unrecognize", "Cacao Early Blight", "N/A", "Cacao Late Blight", "Cacao Leaf Spot"]
 
     @app.route("/api/get_scan_counts", methods=["GET"])
     def get_scan_counts():
@@ -62,7 +62,7 @@ def init_image_routes(app):
             # Query all records excluding healthy classifications
             diseases = (
                 db.session.query(ScanRecord.disease, db.func.count(ScanRecord.disease))
-                .filter(~ScanRecord.disease.in_(["N/A", "Invalid Image"]))
+                .filter(~ScanRecord.disease.in_(["N/A", "Unrecognize"]))
                 .group_by(ScanRecord.disease)
                 .all()
             )

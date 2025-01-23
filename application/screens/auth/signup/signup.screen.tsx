@@ -151,16 +151,15 @@ export default function SignUpScreen() {
         });
       })
       .catch((error) => {
-        setButtonSpinner(false);
-        if (axios.isAxiosError(error)) {
-          if (error.response?.data?.error === "Email already exists") {
-            Toast.show("Email already exists", { type: "danger" });
-          } else {
-            console.error("Error during sign-up:", error);
-          }
+        if (axios.isAxiosError(error) && error.response?.data?.error) {
+          Toast.show(error.response.data.error, { type: "danger" });
         } else {
-          console.error("Unexpected error during sign-up:", error);
+          Toast.show("An error occurred. Please try again.", { type: "danger" });
         }
+        console.error("Error during sign-up:", error);
+      })
+      .finally(() => {
+        setButtonSpinner(false);
       });
   };
 

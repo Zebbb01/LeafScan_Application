@@ -28,11 +28,10 @@ app.config['SQLALCHEMY_ECHO'] = os.getenv('SQLALCHEMY_ECHO') == 'True'
 # Mail configuration
 app.config.update(
     MAIL_SERVER=os.getenv('MAIL_SERVER'),
-    MAIL_PORT=int(os.getenv('MAIL_PORT', 465)),
+    MAIL_PORT=int(os.getenv('MAIL_PORT', 587)),
     MAIL_USERNAME=os.getenv('MAIL_USERNAME'),
     MAIL_PASSWORD=os.getenv('MAIL_PASSWORD'),
     MAIL_USE_TLS=os.getenv('MAIL_USE_TLS') == 'True',
-    MAIL_USE_SSL=os.getenv('MAIL_USE_SSL') == 'True',
     MAIL_DEFAULT_SENDER=os.getenv('MAIL_DEFAULT_SENDER')
 )
 
@@ -44,8 +43,11 @@ CORS(app, supports_credentials=True, resources={r"/*": {"origins": "*"}})
 db.init_app(app)
 migrate = Migrate(app, db)
 
-# Seed the database
+# Automatically create the database if not already created
 with app.app_context():
+    db.create_all()  # This will create all tables based on the models if they don't exist already
+
+    # Seed the database with disease data
     DiseaseInfo.seed()
 
 # Serve frontend

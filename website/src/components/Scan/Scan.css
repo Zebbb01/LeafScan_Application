@@ -465,6 +465,19 @@
   background-color: #555;
 }
 
+.unrecognize {
+  font-size: 20px; /* Slightly larger font size */
+  font-weight: bold;
+  color: #d9534f; /* Bootstrap's danger color for a professional look */
+  text-align: center;
+  font-style: italic; /* Italic font style */
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2); /* Slight shadow for better readability */
+  padding: 10px; /* Padding for better spacing */
+  border: 2px solid #d9534f; /* Border to make it stand out */
+  border-radius: 5px; /* Rounded corners */
+  background-color: #f2dede; /* Light red background for emphasis */
+}
+
 
 /* Responsive Layout */
 @media (min-width: 1200px) {
@@ -505,6 +518,7 @@
     max-width: 100%; /* Make boxes take full width on smaller screens */
     padding: 15px;
     width: 130%;
+    cursor: pointer;
   }
 
   .scan-info-box p {
@@ -518,6 +532,7 @@
     padding: 15px;
     padding-right: 30px;
     width: 130%;
+    cursor: pointer;
   }
 
   .scan-info-box-dropdown p {

@@ -139,7 +139,6 @@ const EditProfileScreen = () => {
         toast.show("Failed to update profile", { type: "danger" });
       }
     } catch (error) {
-      console.error(error);
       toast.show("Failed to update profile", { type: "danger" });
     } finally {
       setButtonSpinner(false);

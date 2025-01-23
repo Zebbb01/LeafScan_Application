@@ -23,6 +23,9 @@ const Scan = () => {
   const [currentTime, setCurrentTime] = useState(new Date()); // State for real-time clock
   const [showErrorModal, setShowErrorModal] = useState(false); // State for the error modal
   const [errorMessage, setErrorMessage] = useState(""); // State for the error message
+  const [showActualNumbers, setShowActualNumbers] = useState(false); // State to toggle between actual numbers and "Many"
+
+  const threshold = 10;
 
   // Fetch the scan counts from the server
   const fetchScanCounts = async () => {
@@ -172,6 +175,10 @@ const Scan = () => {
     }
   };
 
+  const toggleShowActualNumbers = () => {
+    setShowActualNumbers(!showActualNumbers);
+  };
+
   return (
     <>
       <div className="scan-container">
@@ -200,11 +207,13 @@ const Scan = () => {
         )}
 
         <div className="scan-header">
-          <div className="scan-info-box-dropdown" onClick={() => setShowDiseaseList(!showDiseaseList)}>
+          <div className="scan-info-box-dropdown" >
             <div className="scan-title">
               <h2>Total Scan Diseases</h2>
-              <p><strong>{totalDiseasesDetected}</strong></p>
-              <div className="dropdown-icon-graph">
+              <p onClick={toggleShowActualNumbers}>
+                <strong>{showActualNumbers || totalDiseasesDetected <= threshold ? totalDiseasesDetected : '500+'}</strong>
+              </p>
+              <div className="dropdown-icon-graph" onClick={() => setShowDiseaseList(!showDiseaseList)}>
                 {showDiseaseList ? <FaChevronRight /> : <FaChevronLeft />}
               </div>
             </div>
@@ -228,19 +237,25 @@ const Scan = () => {
           <div className="scan-info-box">
             <div className="scan-title">
               <h2>Total Scans</h2>
-              <p><strong>{totalScans}</strong></p>
+              <p onClick={toggleShowActualNumbers}>
+                <strong>{showActualNumbers || totalScans <= threshold ? totalScans : '500+'}</strong>
+              </p>
             </div>
           </div>
           <div className="scan-info-box">
             <div className="scan-title">
               <h2>Scan Today</h2>
-              <p><strong>{scansToday}</strong></p>
+              <p onClick={toggleShowActualNumbers}>
+                <strong>{showActualNumbers || scansToday <= threshold ? scansToday : '500+'}</strong>
+              </p>
             </div>
           </div>
           <div className="scan-info-box">
             <div className="scan-title">
               <h2>Your Total Scan</h2>
-              <p><strong>{userTotalScans}</strong></p>
+              <p onClick={toggleShowActualNumbers}>
+                <strong>{showActualNumbers || userTotalScans <= threshold ? userTotalScans : '500+'}</strong>
+              </p>
             </div>
           </div>
           <div className="scan-info-box">
@@ -278,8 +293,16 @@ const Scan = () => {
               <img src={image} alt="Uploaded" className="preview-img" />
             </div>
             <div className={`info-container ${scanned ? 'show' : ''}`}>
-              <p><strong>Disease:</strong> {disease || 'N/A'}</p>
-              <p><strong>Accuracy:</strong> {confidence ? `${confidence}%` : 'N/A'}</p>
+              {disease === 'Unrecognize' ? (
+                <div>
+                  <p className="unrecognize">Unrecognized Image</p>
+                </div>
+              ) : (
+                <>
+                  <p><strong>Disease:</strong> {disease || 'N/A'}</p>
+                  <p><strong>Accuracy:</strong> {confidence ? `${confidence}%` : 'N/A'}</p>
+                </>
+              )}
             </div>
             <div className="button-group">
               <button className="cancel-button" onClick={handleCancel} disabled={loading}>

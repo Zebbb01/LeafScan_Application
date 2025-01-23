@@ -121,18 +121,22 @@ export default function LoginScreen() {
     }
 
     setButtonSpinner(true);
+
     axios
-      .post(`${SERVER_URI}/api/token`, {
-        email: userInfo.email,
-        password: userInfo.password,
-      })
-      .then((res) => {
-        const userData = res.data.user; // Adjust according to the response format
-        setUser(userData);
-        Toast.show("Login successfully.", { type: "success" });
-        setUserInfo({ email: "", password: "" });
-        setButtonSpinner(false);
-        router.push("/(routes)/camera"); // Navigate to dashboard or home screen after login
+      .post(`${SERVER_URI}/api/token`, userInfo)
+      .then((response) => {
+        const userData = response.data;
+        if (!userData.is_verified) {
+          Toast.show("Please verify your account.", { type: "warning" });
+          router.push({
+            pathname: "/(routes)/verifyAccount",
+            params: { userId: userData.id, email: userInfo.email },
+          });
+        } else {
+          setUser(userData);
+          Toast.show("Login successful.", { type: "success" });
+          router.push("/(routes)/camera"); // Navigate to dashboard or home screen after login
+        }
       })
       .catch((error) => {
         setButtonSpinner(false);
@@ -142,13 +146,21 @@ export default function LoginScreen() {
           } else if (error.response.data.error === "Email not exist") {
             Toast.show("Email does not exist. Please check your email.", { type: "danger" });
           } else if (error.response.data.error === "Account not verified") {
-            Toast.show("Account not verified. Please verify your account.", { type: "danger" });
+            const userData = error.response.data.user; // Adjust according to the response format
+            router.push({
+              pathname: "/(routes)/verifyAccount",
+              params: { userId: userData.id, email: userInfo.email },
+            });
           } else {
             Toast.show("An error occurred. Please try again.", { type: "danger" });
           }
         } else {
           Toast.show("An error occurred. Please try again.", { type: "danger" });
         }
+        console.error("Error during login:", error, { type: "danger" });
+      })
+      .finally(() => {
+        setButtonSpinner(false);
       });
   };
 
