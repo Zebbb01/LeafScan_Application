@@ -26,6 +26,7 @@ server/venv/
 
 # Environment variables
 **/.env
+**/.pem
 
 # IDE-specific files
 .vscode/
