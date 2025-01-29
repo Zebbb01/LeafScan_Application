@@ -28,6 +28,7 @@ Thumbs.db
 
 # Python environment configuration
 *.env
+leaf_keypair.pem
 
 # Docker files
 Dockerfile
