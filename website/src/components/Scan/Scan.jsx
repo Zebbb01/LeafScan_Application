@@ -25,7 +25,7 @@ const Scan = () => {
   const [errorMessage, setErrorMessage] = useState(""); // State for the error message
   const [showActualNumbers, setShowActualNumbers] = useState(false); // State to toggle between actual numbers and "Many"
 
-  const threshold = 10;
+  const threshold = 1000;
 
   // Fetch the scan counts from the server
   const fetchScanCounts = async () => {
