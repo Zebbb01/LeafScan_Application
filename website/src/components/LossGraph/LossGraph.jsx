@@ -27,11 +27,11 @@ const LossGraph = () => {
     const fetchData = async () => {
         setLoading(true);
         try {
-            const response = await fetch('/api/production-losses');
+            const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/production-losses`);
             const data = await response.json();
             if (!response.ok) throw new Error(data.error || 'Failed to fetch data');
 
-            const forecastResponse = await fetch('/api/forecast-losses');
+            const forecastResponse = await fetch(`${import.meta.env.VITE_API_BASE_URL}/forecast-losses`);
             const forecastData = await forecastResponse.json();
             setForecastDetails(forecastData);
 

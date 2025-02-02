@@ -54,7 +54,7 @@ const UploadCsv = ({ setIsDataLoaded, setCsvUploaded, setSeverityChanged }) => {
         formData.append('severity', severity);
 
         try {
-            const response = await fetch('/api/upload_csv', { method: 'POST', body: formData });
+            const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/upload_csv`, { method: 'POST', body: formData });
             const result = await response.json();
             if (!response.ok) {
                 throw new Error(result.error || 'Unknown upload error');

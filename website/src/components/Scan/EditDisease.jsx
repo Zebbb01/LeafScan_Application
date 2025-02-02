@@ -28,7 +28,7 @@ const EditDisease = () => {
   useEffect(() => {
     setLoading(true);
     axios
-      .get('/api/diseases')
+      .get(`${import.meta.env.VITE_API_BASE_URL}/diseases`)
       .then((response) => {
         setDiseases(response.data || []);
         setLoading(false);
@@ -92,7 +92,7 @@ const EditDisease = () => {
 
     setLoading(true);
     axios
-      .put('/api/diseases', formData)
+      .put(`${import.meta.env.VITE_API_BASE_URL}/diseases`, formData)
       .then(() => {
         toast.success(`Disease information updated for ${formData.name}`, {
           position: 'top-center',

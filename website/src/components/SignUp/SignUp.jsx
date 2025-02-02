@@ -49,7 +49,7 @@ const SignUp = () => {
 
     if (!validationErrors.name && !validationErrors.email && !validationErrors.password && !validationErrors.confirmPassword) {
       setLoading(true);
-      axios.post('/api/create_token1', values, { withCredentials: true })
+      axios.post(`${import.meta.env.VITE_API_BASE_URL}/create_token1`, values, { withCredentials: true })
         .then(() => {
           setLoading(false);
           navigate('/');

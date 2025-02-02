@@ -16,7 +16,7 @@ const BarGraph = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await fetch('/api/production_by_year');
+                const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/production_by_year`);
                 if (!response.ok) throw new Error('Network response was not ok.');
 
                 const data = await response.json();

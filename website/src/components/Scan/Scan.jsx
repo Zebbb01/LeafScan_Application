@@ -30,7 +30,7 @@ const Scan = () => {
   // Fetch the scan counts from the server
   const fetchScanCounts = async () => {
     try {
-      const response = await fetch('/api/get_scan_counts');
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/get_scan_counts`);
       const data = await response.json();
       setTotalScans(data.total_scans);
       setUserTotalScans(data.total_user_scans);
@@ -43,7 +43,7 @@ const Scan = () => {
   // Fetch the disease counts from the server
   const fetchDiseaseCounts = async () => {
     try {
-      const response = await fetch('/api/get_disease_counts');
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/get_disease_counts`);
       const data = await response.json();
       setTotalDiseasesDetected(data.total_diseases_detected);
       setDiseaseCounts(data.disease_counts);
@@ -123,7 +123,7 @@ const Scan = () => {
       const formData = new FormData();
       formData.append('image', blob, 'image.jpg');
 
-      const uploadResponse = await fetch('/api/upload_image', {
+      const uploadResponse = await fetch(`${import.meta.env.VITE_API_BASE_URL}/upload_image`, {
         method: 'POST',
         body: formData,
         headers: {

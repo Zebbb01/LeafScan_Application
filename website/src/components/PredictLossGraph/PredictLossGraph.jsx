@@ -26,7 +26,7 @@ const PredictLossGraph = () => {
         setLoading(true);
         setError(null);
         try {
-            const response = await fetch(`/api/bargraph-losses`);
+            const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/bargraph-losses`);
             const data = await response.json();
 
             if (!response.ok || !data.dates || data.dates.length === 0) {
@@ -34,7 +34,7 @@ const PredictLossGraph = () => {
                 setError(data.error || 'No forecast data available.');
                 return;
             }
-            const forecastResponse = await fetch('/api/forecast-losses');
+            const forecastResponse = await fetch(`${import.meta.env.VITE_API_BASE_URL}/forecast-losses`);
             const forecastData = await forecastResponse.json();
             setForecastDetails(forecastData);
 

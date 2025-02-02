@@ -18,10 +18,13 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'http://13.239.34.210', // Flask backend URL
+        target: 'http://13.239.34.210', // Flask backend URL for local dev
         changeOrigin: true,
-        secure: false,
+        secure: false,  // If needed for local development with non-https
       },
     },
+  },
+  define: {
+    'process.env.VITE_API_BASE_URL': JSON.stringify(process.env.VITE_API_BASE_URL),
   },
 });

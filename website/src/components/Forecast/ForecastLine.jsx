@@ -15,7 +15,7 @@ const ForecastLine = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch('/api/prediction', { withCredentials: true });
+        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/prediction`, { withCredentials: true });
         const contentType = response.headers.get('content-type');
   
         if (!response.ok || !contentType.includes('application/json')) {

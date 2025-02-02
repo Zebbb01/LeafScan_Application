@@ -36,7 +36,7 @@ const Login = ({ setUser }) => {
 
     if (!validationErrors.email && !validationErrors.password) {
       setLoading(true);
-      axios.post('/api/token', values, { withCredentials: true })
+      axios.post(`${import.meta.env.VITE_API_BASE_URL}/token`, values, { withCredentials: true })
         .then(res => {
           setLoading(false);
           if (res.data.status === "success") {

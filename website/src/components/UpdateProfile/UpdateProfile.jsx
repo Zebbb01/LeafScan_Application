@@ -24,7 +24,7 @@ const UpdateProfile = ({ setUser }) => {
     if (!location.state) {
       // If state is not available, fetch user data
       setLoading(true);
-      axios.get(`/api/user/${id}`)
+      axios.get(`${import.meta.env.VITE_API_BASE_URL}/user/${id}`)
         .then(res => {
           setName(res.data.name);
           setEmail(res.data.email);
@@ -64,7 +64,7 @@ const UpdateProfile = ({ setUser }) => {
 
     if (currentPassword) {
       try {
-        const response = await axios.post('/api/check-password', {
+        const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/check-password`, {
           id,
           password: currentPassword
         });
@@ -108,7 +108,7 @@ const UpdateProfile = ({ setUser }) => {
   const updateProfile = async (dataToUpdate) => {
     setLoading(true);
 
-    axios.put(`/api/update/${id}`, dataToUpdate, { withCredentials: true })
+    axios.put(`${import.meta.env.VITE_API_BASE_URL}/update/${id}`, dataToUpdate, { withCredentials: true })
       .then(res => {
         setLoading(false);
         if (res.data.updated) {

@@ -13,7 +13,7 @@ const ReportTable = ({ csvUploaded, severityChanged, setSeverityChanged }) => {
 
     const fetchReportData = async () => {
         try {
-            const response = await fetch('/api/report_data', { method: 'GET' });
+            const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/report_data`, { method: 'GET' });
             const result = await response.json();
     
             if (!response.ok) {

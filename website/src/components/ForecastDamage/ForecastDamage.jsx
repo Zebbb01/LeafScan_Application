@@ -20,7 +20,7 @@ const ForecastDamage = ({ isDataLoaded }) => {
 
   const fetchRawData = async () => {
     try {
-      const response = await fetch('/api/get_production_data');
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/get_production_data`);
       if (!response.ok) throw new Error('Failed to fetch raw production data');
       const data = await response.json();
       setRawProductionData(data.production);
