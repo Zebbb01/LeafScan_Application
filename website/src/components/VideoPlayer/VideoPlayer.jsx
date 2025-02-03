@@ -1,6 +1,6 @@
 import React, { useRef }from 'react'
 import './VideoPlayer.css'
-import video from '../../assets/Cacao farming (360p).mp4'
+import video from '../../public/CacaoVideo.mp4.mp4'
 
 const VideoPlayer = ({playState, setPlayState}) => {
 
