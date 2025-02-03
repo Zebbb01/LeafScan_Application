@@ -100,6 +100,7 @@ const App = () => {
               <div className='App'>
                 {user && (
                   <>
+                  <>
                     <Suspense fallback={<Spinner message="Loading Hero..." />}><Hero /></Suspense>
                     <div className="container">
                       <Suspense fallback={<Spinner />}><Title subTitle='Disease Detection' title='Scan Your Cacao Leaf' /></Suspense>
@@ -134,8 +135,11 @@ const App = () => {
                     <Suspense fallback={<Spinner />}><Title subTitle='Reach Out' title='Contact Us' /></Suspense>
                     <Suspense fallback={<Spinner />}><Contact /></Suspense>
                     <Suspense fallback={<Spinner />}><Footer /></Suspense>
-                    <Suspense fallback={<Spinner />}><VideoPlayer playState={playState} setPlayState={setPlayState} /></Suspense>
+                    
                   </>
+                  <Suspense fallback={<Spinner />}><VideoPlayer playState={playState} setPlayState={setPlayState} /></Suspense>
+                  </>
+                  
                 )}
               </div>
             ) : (
